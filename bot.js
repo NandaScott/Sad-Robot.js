@@ -7,10 +7,18 @@ client.on('ready', () => {
     console.log('Logged in!');
 });
 
-client.on('message', msg => {
-    if (msg.content === 'ping') {
-        msg.reply('pong');
+client.on('message', (msg) => {
+    if (msg.author.id == client.user.id) {
+        return
     }
+
+    let cards = msg.content
+        .match(/\[\[\b[\w\s\'\.|]+\b\]\]/g)
+        .map((card) => {
+        return card.slice(2, card.indexOf(']]'));
+    });
+
+    msg.channel.send(cards);
 });
 
 client.login(creds['token'])
