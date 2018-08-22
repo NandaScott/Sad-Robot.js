@@ -16,13 +16,13 @@ client.on('message', (msg) => {
     }
 
     let cardsFound = msg.content
-        .match(/\[\[\b[\w\s\'\.|]+\b\]\]/g)
+        .match(/\[\[\b[\w\s\'\.]+\b\]\]/g)
         .map((card) => {
         return card.slice(2, card.indexOf(']]'));
     });
 
     for (let i = 0; i < cardsFound.length; i++) {
-        setInterval(() => {
+        setTimeout(() => {
             axios.get(`${scryfallBaseUrl}/cards/named`, {
                 params: {
                     fuzzy: cardsFound[i]
