@@ -18,15 +18,13 @@ client.on('message', (msg) => {
     let cardsFound = msg.content
         .match(/\[\[\b[\w\s\'\.|]+\b\]\]/g)
         .map((card) => {
-            let parts = card.match(/\w+/g);
+            let parts = card.match(/[\w\s]+/g);
 
             return {
                 card: parts[0],
                 mode: parts[1]
             };
         });
-
-    console.log(cardsFound);
 
     for (let i = 0; i < cardsFound.length; i++) {
         setTimeout(() => {
