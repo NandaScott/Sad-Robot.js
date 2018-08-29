@@ -4,7 +4,7 @@ const scryfallBaseUrl = 'https://api.scryfall.com';
 
 function handleCardFetch(msg) {
     let cardsFound = msg.content
-    .match(/\[\[\b[\w\s\'\.\,|]+\b\]\]/g)
+    .match(/(\[\[[\w\s\'\.\,|]+\]\])+/g)
     .map((card) => {
         let parts = card.match(/[\w\s\,\'\.]+/g);
 
