@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const axios = require('axios');
 
 const handleCardFetch = require('./handleCardFetch');
+const helpText = require('./helpText');
 
 const client = new Discord.Client();
 
@@ -21,6 +22,9 @@ client.on('message', (msg) => {
             break;
         case 'good bot':
             msg.reply('Thank you!');
+            break;
+        case '!help':
+            msg.channel.send(helpText.helpText);
             break;
     }
 });
