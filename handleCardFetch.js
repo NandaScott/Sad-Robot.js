@@ -32,6 +32,9 @@ function handleCardFetch(msg) {
                 case 'oracle':
                     cardModes.oracleText(msg, scryfallBaseUrl, cardsFound[i].card);
                     break;
+                case 'price':
+                    cardModes.cardPrice(msg, scryfallBaseUrl, cardsFound[i].card);
+                    break;
             }
         }, 100);
     }

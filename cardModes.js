@@ -126,4 +126,44 @@ function oracleText(msg, scryfallBaseUrl, cardName) {
     });
 }
 
-module.exports = { cardImage, oracleText };
+function cardPrice(msg, scryfallBaseUrl, cardName) {
+    let startTimer = new Date().getTime();
+
+    axios.get(`${scryfallBaseUrl}/cards/named`, {
+        params: {
+            fuzzy: cardName
+        }
+    })
+    .then((response) => {
+        // Number of seconds it took to complete the get request
+        // displayed as a float.
+        let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+        let scryfall = response.data;
+
+        let image;
+
+        if ('card_faces' in scryfall) {
+            image = scryfall.card_faces[0].image_uris.small
+        } else {
+            image = scryfall.image_uris.small
+        }
+
+        let object = {
+            usd: scryfall.usd || 'N/A',
+            eur: scryfall.eur || 'N/A',
+            tix: scryfall.tix || 'N/A',
+            name: scryfall.name,
+            image: image,
+            url: scryfall.scryfall_uri
+        }
+
+        cardHelpers.priceEmbed(msg, seconds, object);
+
+    })
+    .catch((error) => {
+        msg.channel.send(error.response.data.details);
+    });
+}
+
+module.exports = { cardImage, oracleText, cardPrice };

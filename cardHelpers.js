@@ -39,4 +39,18 @@ function oracleEmbed(msg, seconds, object) {
     msg.channel.send({ embed });
 }
 
-module.exports = { imageEmbed, oracleEmbed };
+function priceEmbed(msg, seconds, object) {
+    let embed = new Discord.RichEmbed()
+        .setURL(object.url)
+        .setTitle(`**${object.name}**`)
+        .setThumbnail(object.image)
+        .addField('USD', object.usd)
+        .addField('EUR', object.eur)
+        .addField('TIX', object.tix)
+        .setColor(0x1b6f9)
+        .setFooter(`Fetch took: ${seconds} seconds.`);
+    
+        msg.channel.send({ embed });
+}
+
+module.exports = { imageEmbed, oracleEmbed, priceEmbed };
