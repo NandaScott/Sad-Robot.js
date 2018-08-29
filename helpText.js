@@ -10,6 +10,7 @@ Here is a list of patterns I look for:
 [[cardname | oracle]] ... Fetch a card's oracle text
 [[cardname | price]] .... Fetch a card's price
 [[cardname | set:<code>]] Fetch a card printing as an image
+[[cardname | legal]] .... Fetch a card's legality
 \`\`\`
 `;
 

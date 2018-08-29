@@ -214,4 +214,33 @@ function cardSet(msg, scryfallBaseUrl, cardObject) {
     });
 }
 
-module.exports = { cardImage, oracleText, cardPrice, cardSet };
+function cardLegality(msg, scryfallBaseUrl, cardName) {
+    let startTimer = new Date().getTime();
+
+    axios.get(`${scryfallBaseUrl}/cards/named`, {
+        params: {
+            fuzzy: cardName
+        }
+    })
+    .then((response) => {
+        // Number of seconds it took to complete the get request
+        // displayed as a float.
+        let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+        let scryfall = response.data;
+
+        let object = {
+            url: scryfall.scryfall_uri,
+            name: scryfall.name,
+            image: scryfall.image_uris.small,
+            legalities: scryfall.legalities
+        }
+
+        cardHelpers.legalEmbed(msg, seconds, object);
+    })
+    .catch((error) => {
+        msg.channel.send(error.response.data.details);
+    });
+}
+
+module.exports = { cardImage, oracleText, cardPrice, cardSet, cardLegality };

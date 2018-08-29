@@ -53,4 +53,43 @@ function priceEmbed(msg, seconds, object) {
     msg.channel.send({ embed });
 }
 
-module.exports = { imageEmbed, oracleEmbed, priceEmbed };
+function legalEmbed(msg, seconds, object) {
+    let embed = new Discord.RichEmbed()
+        .setURL(object.url)
+        .setTitle(`**${object.name}**`)
+        .setThumbnail(object.image)
+        .setColor(0x1b6f9)
+        .setFooter(`Fetch took: ${seconds} seconds.`)
+
+    for (let key in object.legalities) {
+        if (object.legalities.hasOwnProperty(key)) {
+
+            let emoji;
+
+            switch (object.legalities[key]) {
+                case 'legal':
+                    emoji = '✅';
+                    break;
+                case 'not_legal':
+                    emoji = '❌';
+                    break;
+                case 'restricted':
+                    emoji = '⛔';
+                    break;
+                case 'banned':
+                    emoji = '⛔';
+                    break;
+            }
+
+            embed.addField(
+                key.charAt(0).toUpperCase() + key.slice(1),
+                (object.legalities[key].charAt(0).toUpperCase() + object.legalities[key].slice(1)).replace('_', ' ') + ` ${emoji}`,
+                true
+            );
+        }
+    }
+
+    msg.channel.send({ embed });
+}
+
+module.exports = { imageEmbed, oracleEmbed, priceEmbed, legalEmbed };

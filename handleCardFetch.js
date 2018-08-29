@@ -45,6 +45,9 @@ function handleCardFetch(msg) {
                 case 'set':
                     cardModes.cardSet(msg, scryfallBaseUrl, cardsFound[i]);
                     break;
+                case 'legal':
+                    cardModes.cardLegality(msg, scryfallBaseUrl, cardsFound[i].card);
+                    break;
             }
         }, 100);
     }
