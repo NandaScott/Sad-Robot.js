@@ -9,6 +9,7 @@ Here is a list of patterns I look for:
 [[cardname]] ............ Fetch a card as an image
 [[cardname | oracle]] ... Fetch a card's oracle text
 [[cardname | price]] .... Fetch a card's price
+[[cardname | set:<code>]] Fetch a card printing as an image
 \`\`\`
 `;
 
