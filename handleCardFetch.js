@@ -4,14 +4,22 @@ const scryfallBaseUrl = 'https://api.scryfall.com';
 
 function handleCardFetch(msg) {
     let cardsFound = msg.content
-    .match(/(\[\[[\w\s\'\.\,|]+\]\])+/g)
+    .match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g)
     .map((card) => {
-        let parts = card.match(/[\w\s\,\'\.]+/g);
+        let parts = card.match(/[\w\s\,\'\.:]+/g);
 
         if (parts.length < 2) {
             return {
                 card: parts[0].trim(),
                 mode: ''
+            }
+        }
+
+        if (parts[1].includes('set:')) {
+            return {
+                card: parts[0].trim(),
+                mode: 'set',
+                setCode: parts[1].split(':').pop().trim()
             }
         }
 
@@ -23,7 +31,6 @@ function handleCardFetch(msg) {
 
     for (let i = 0; i < cardsFound.length; i++) {
         setTimeout(() => {
-            let startTimer = new Date().getTime();
 
             switch (cardsFound[i].mode) {
                 default:
@@ -34,6 +41,9 @@ function handleCardFetch(msg) {
                     break;
                 case 'price':
                     cardModes.cardPrice(msg, scryfallBaseUrl, cardsFound[i].card);
+                    break;
+                case 'set':
+                    cardModes.cardSet(msg, scryfallBaseUrl, cardsFound[i]);
                     break;
             }
         }, 100);

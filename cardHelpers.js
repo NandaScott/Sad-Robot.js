@@ -50,7 +50,7 @@ function priceEmbed(msg, seconds, object) {
         .setColor(0x1b6f9)
         .setFooter(`Fetch took: ${seconds} seconds.`);
     
-        msg.channel.send({ embed });
+    msg.channel.send({ embed });
 }
 
 module.exports = { imageEmbed, oracleEmbed, priceEmbed };
