@@ -2,8 +2,6 @@ let creds = require('./credentials.json');
 const Discord = require('discord.js');
 const axios = require('axios');
 
-const cardHelpers = require('./cardHelpers');
-const cardImage = require('./cardImage');
 const handleCardFetch = require('./handleCardFetch');
 
 const client = new Discord.Client();

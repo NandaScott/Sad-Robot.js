@@ -1,4 +1,4 @@
-const cardImage = require('./cardImage');
+const cardModes = require('./cardModes');
 
 const scryfallBaseUrl = 'https://api.scryfall.com';
 
@@ -21,7 +21,10 @@ function handleCardFetch(msg) {
 
             switch (cardsFound[i].mode) {
                 default:
-                    cardImage.cardImage(msg, scryfallBaseUrl, cardsFound[i].card);
+                    cardModes.cardImage(msg, scryfallBaseUrl, cardsFound[i].card);
+                    break;
+                case 'oracle':
+                    cardModes.oracleText(msg, scryfallBaseUrl, cardsFound[i].card);
                     break;
             }
         }, 100);
