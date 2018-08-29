@@ -12,15 +12,26 @@ function imageEmbed(msg, seconds, image, url, name) {
 }
 
 function oracleEmbed(msg, seconds, object) {
+    let pt;
+
+    if (object.power != '') {
+        pt = `${object.power}/${object.toughness}`;
+    } else {
+        pt = '';
+    }
+
     let embed = new Discord.RichEmbed()
         .setThumbnail(object.image)
         .setURL(object.url)
-        .setTitle(`**${object.name}** ${object.cost}`)
+        .setTitle(`**${object.name}**`)
         .setDescription(`
+            ${object.name} ${object.cost}
+            ------
             ${object.typeLine}
+            ------
             ${object.oracleText}
 
-            ${object.power}/${object.toughness}
+            ${pt}
             `)
         .setColor(0x1b6f9)
         .setFooter(`Fetch took: ${seconds} seconds.`);
