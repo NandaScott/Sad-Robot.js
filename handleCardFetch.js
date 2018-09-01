@@ -11,7 +11,8 @@ function handleCardFetch(msg) {
         if (parts.length < 2) {
             return {
                 card: parts[0].trim(),
-                mode: ''
+                mode: '',
+                setCode: ''
             }
         }
 
@@ -25,7 +26,8 @@ function handleCardFetch(msg) {
 
         return {
             card: parts[0].trim(),
-            mode: parts[1].trim()
+            mode: parts[1].trim(),
+            setCode: ''
         };
     });
 
@@ -34,19 +36,19 @@ function handleCardFetch(msg) {
 
             switch (cardsFound[i].mode) {
                 default:
-                    cardModes.cardImage(msg, scryfallBaseUrl, cardsFound[i].card);
+                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'image');
                     break;
                 case 'oracle':
-                    cardModes.oracleText(msg, scryfallBaseUrl, cardsFound[i].card);
+                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'oracle');
                     break;
                 case 'price':
-                    cardModes.cardPrice(msg, scryfallBaseUrl, cardsFound[i].card);
+                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'price');
                     break;
                 case 'set':
-                    cardModes.cardSet(msg, scryfallBaseUrl, cardsFound[i]);
+                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'set');
                     break;
                 case 'legal':
-                    cardModes.cardLegality(msg, scryfallBaseUrl, cardsFound[i].card);
+                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'legal');
                     break;
             }
         }, 100);
