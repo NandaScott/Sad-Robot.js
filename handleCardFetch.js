@@ -1,7 +1,5 @@
 const cardModes = require('./cardModes');
 
-const scryfallBaseUrl = 'https://api.scryfall.com';
-
 function handleCardFetch(msg) {
     let cardsFound = msg.content
     .match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g)
@@ -36,7 +34,7 @@ function handleCardFetch(msg) {
 
             switch (cardsFound[i].mode) {
                 default:
-                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'image');
+                    cardModes.checkCache(msg, cardsFound[i], 'image');
                     break;
                 case 'oracle':
                     cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'oracle');
