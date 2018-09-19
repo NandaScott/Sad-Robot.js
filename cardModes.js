@@ -4,6 +4,109 @@ const redis = require('redis');
 
 const cache = redis.createClient(6379, '127.0.0.1');
 
+function handleTransform (msg, seconds, scryfall_object, mode) {
+    for (let i = 0; i < scryfall_object.card_faces.length; i++) {
+        switch (mode) {
+            case 'image':
+
+                cardHelpers.imageEmbed(
+                    msg,
+                    seconds,
+                    scryfall_object.card_faces[i].image_uris.normal,
+                    scryfall_object.scryfall_uri,
+                    scryfall_object.card_faces[i].name
+                );
+                break;
+
+            case 'oracle':
+                let power, toughness;
+
+                if ('power' in scryfall_object.card_faces[i]) {
+                    power = scryfall_object.card_faces[i].power;
+                    toughness = scryfall_object.card_faces[i].toughness;
+                } else {
+                    power = '';
+                    toughness = '';
+                }
+
+                let object = {
+                    image: scryfall_object.card_faces[i].image_uris.small,
+                    url: scryfall_object.scryfall_uri,
+                    name: scryfall_object.card_faces[i].name,
+                    cost: scryfall_object.card_faces[i].mana_cost,
+                    typeLine: scryfall_object.card_faces[i].type_line,
+                    oracleText: scryfall_object.card_faces[i].oracle_text,
+                    power: power,
+                    toughness: toughness
+                }
+
+                cardHelpers.oracleEmbed(msg, seconds, object);
+        }
+    }
+}
+
+function handleFlip (msg, seconds, scryfall_object, mode) {
+    switch (mode) {
+        case 'image':
+
+            cardHelpers.imageEmbed(
+                msg,
+                seconds,
+                scryfall_object.image_uris.normal,
+                scryfall_object.scryfall_uri,
+                scryfall_object.name
+            );
+            break;
+
+        case 'oracle':
+            for (let i = 0; i < scryfall_object.card_faces.length; i++) {
+                let power, toughness;
+
+                if ('power' in scryfall_object.card_faces[i]) {
+                    power = scryfall_object.card_faces[i].power;
+                    toughness = scryfall_object.card_faces[i].toughness;
+                } else {
+                    power = '';
+                    toughness = '';
+                }
+
+                let object = {
+                    image: scryfall_object.image_uris.small,
+                    url: scryfall_object.scryfall_uri,
+                    name: scryfall_object.card_faces[i].name,
+                    cost: scryfall_object.card_faces[i].mana_cost,
+                    typeLine: scryfall_object.card_faces[i].type_line,
+                    oracleText: scryfall_object.card_faces[i].oracle_text,
+                    power: power,
+                    toughness: toughness
+                }
+
+                cardHelpers.oracleEmbed(msg, seconds, object);
+            }
+            break;
+
+        case 'price':
+            let object = {
+                usd: scryfall_object.usd || 'N/A',
+                eur: scryfall_object.eur || 'N/A',
+                tix: scryfall_object.tix || 'N/A',
+                name: scryfall_object.name,
+                image: scryfall_object.image_uris.small,
+                url: scryfall_object.scryfall_uri
+            }
+
+            cardHelpers.priceEmbed(msg, seconds, object);
+            break;
+    }
+}
+
+
+const cardFaceMapping = {
+    transform: handleTransform,
+    flip: handleFlip,
+    // split:
+};
+
 cache.on('ready', (err, reply) => {
     console.log('Connected to redis.')
 });
@@ -143,46 +246,15 @@ function checkCache(msg, scryfallBaseUrl, paramsObject, embedType) {
 }
 
 function handleMultifaceCards(msg, seconds, scryfall_object, mode) {
-    for (let i = 0; i < scryfall_object.card_faces.length; i++) {
-        switch (mode) {
-            case 'image':
 
-                cardHelpers.imageEmbed(
-                    msg,
-                    seconds,
-                    scryfall_object.card_faces[i].image_uris.normal,
-                    scryfall_object.scryfall_uri,
-                    scryfall_object.card_faces[i].name
-                );
-                break;
+    const handler = cardFaceMapping[scryfall_object.layout];
 
-            case 'oracle':
-                let power, toughness;
-
-                if ('power' in scryfall_object.card_faces[i]) {
-                    power = scryfall_object.card_faces[i].power;
-                    toughness = scryfall_object.card_faces[i].toughness;
-                } else {
-                    power = '';
-                    toughness = '';
-                }
-
-                let object = {
-                    image: scryfall_object.card_faces[i].image_uris.small,
-                    url: scryfall_object.scryfall_uri,
-                    name: scryfall_object.card_faces[i].name,
-                    cost: scryfall_object.card_faces[i].mana_cost,
-                    typeLine: scryfall_object.card_faces[i].type_line,
-                    oracleText: scryfall_object.card_faces[i].oracle_text,
-                    power: power,
-                    toughness: toughness
-                }
-
-                cardHelpers.oracleEmbed(msg, seconds, object);
-
-            
-        }
+    if (handler) {
+        return handler(msg, seconds, scryfall_object, mode);
     }
+
+    //Do default operation here
+
 }
 
 function cardImage(msg, scryfallBaseUrl, cardName) {
@@ -301,7 +373,7 @@ function cardPrice(msg, scryfallBaseUrl, cardName) {
         let image;
 
         if ('card_faces' in scryfall) {
-            image = scryfall.card_faces[0].image_uris.small
+            handleMultifaceCards(msg, seconds, scryfall, '')
         } else {
             image = scryfall.image_uris.small
         }
@@ -311,7 +383,7 @@ function cardPrice(msg, scryfallBaseUrl, cardName) {
             eur: scryfall.eur || 'N/A',
             tix: scryfall.tix || 'N/A',
             name: scryfall.name,
-            image: image,
+            image: images,
             url: scryfall.scryfall_uri
         }
 
