@@ -32,7 +32,7 @@ function checkCache(msg, paramsObject, embedType) {
     cache.get(key, (err, reply) => {
         
         if (err) {
-            msg.channel.send(errr);
+            msg.channel.send(err);
             return;
         }
         
