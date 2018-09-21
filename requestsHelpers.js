@@ -9,10 +9,10 @@ function cardsByName(paramsObject) {
         }
     })
     .then((response) => {
-        return response;
+        return response.data;
     })
     .catch((error) => {
-        return error;
+        return error.response.data
     });
 }
 

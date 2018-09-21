@@ -26,20 +26,22 @@ function handleMultifaceCards(scryfallObject) {
 }
 
 function checkCache(msg, paramsObject, embedType) {
-
+    
     key = `${paramsObject.card} ${embedType}${paramsObject.setCode}`;
-
+    
     cache.get(key, (err, reply) => {
-
+        
         if (err) {
             msg.channel.send(errr);
             return;
         }
-
+        
         if (reply === null) {
             switch (embedType) {
                 case 'image':
-                    return cardImageHandler(msg, paramsObject, getCard=true);
+                    // The empty object here is just a filler for the cacheObject param.
+                    // Need a better fix for this.
+                    return cardImageHandler(msg, paramsObject, {}, getCard=true);
             }
         }
 
@@ -47,27 +49,28 @@ function checkCache(msg, paramsObject, embedType) {
 
         switch (embedType) {
             case 'image':
-                return cardImageHandler(msg, scryfall, paramsObject);
+                return cardImageHandler(msg, paramsObject, scryfall);
         }
     });
 }
 
-function cardImageHandler(msg, scryfall=undefined, paramsObject, getCard=false) {
-
+async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
+    
     let startTimer = new Date().getTime();
     let scryfallCard;
-
+    
     if (getCard) {
-        scryfallCard = requestHelpers.cardsByName(paramsObject); //This isn't getting called for some reason
 
-        cache.setex(`${paramsObject.card} image`, 86400, JSON.stringify(scryfall));
+        scryfallCard = await requestHelpers.cardsByName(paramsObject);
+
+        cache.setex(`${paramsObject.card} image`, 86400, JSON.stringify(scryfallCard));
 
         if (scryfallCard.object === 'error') {
-            msg.channel.send(error.response.data.details);
+            msg.channel.send(scryfallCard.details);
             return;
         }
     } else {
-        scryfallCard = scryfall;
+        scryfallCard = cacheObject;
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);

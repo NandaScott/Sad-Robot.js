@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "discord.js": "^11.3.2",
-    "npm": "^6.4.0",
+    "npm": "^6.4.1",
     "redis": "^2.8.0"
   },
   "devDependencies": {
