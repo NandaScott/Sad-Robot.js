@@ -39,9 +39,7 @@ function checkCache(msg, paramsObject, embedType) {
         if (reply === null) {
             switch (embedType) {
                 case 'image':
-                    // The empty object here is just a filler for the cacheObject param.
-                    // Need a better fix for this.
-                    return cardImageHandler(msg, paramsObject, {}, getCard=true);
+                    return cardImageHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -55,7 +53,7 @@ function checkCache(msg, paramsObject, embedType) {
 }
 
 async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
-    
+
     let startTimer = new Date().getTime();
     let scryfallCard;
     
@@ -76,7 +74,6 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
     if ('card_faces' in scryfallCard) {
-
         let faceArray = handleMultifaceCards(scryfallCard);
 
         for (let i = 0; i < faceArray.length; i++) {
