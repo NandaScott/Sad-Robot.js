@@ -1,6 +1,5 @@
 let creds = require('./credentials.json');
 const Discord = require('discord.js');
-const axios = require('axios');
 
 const handleCardFetch = require('./handleCardFetch');
 const helpText = require('./helpText');
