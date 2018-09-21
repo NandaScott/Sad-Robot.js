@@ -14,21 +14,23 @@ cache.on('error', (err) => {
 });
 
 const cardFaceMapping = {
-    transform: multifaceHandlers.handleTransform
+    transform: multifaceHandlers.handleTransform,
+    flip: multifaceHandlers.handleFlip,
+    split: multifaceHandlers.handleSplit
 };
 
-function handleMultifaceCards(scryfallObject) {
+function handleMultifaceCards(msg, seconds, scryfallObject) {
     const handler = cardFaceMapping[scryfallObject.layout];
 
     if (handler) {
-        return handler(scryfallObject);
+        return handler(msg, seconds, scryfallObject);
     }
 }
 
 function checkCache(msg, paramsObject, embedType) {
-    
+
     key = `${paramsObject.card} ${embedType}${paramsObject.setCode}`;
-    
+
     cache.get(key, (err, reply) => {
         
         if (err) {
@@ -74,11 +76,7 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
     if ('card_faces' in scryfallCard) {
-        let faceArray = handleMultifaceCards(scryfallCard);
-
-        for (let i = 0; i < faceArray.length; i++) {
-            cardHelpers.imageEmbed(msg, seconds, faceArray[i]);
-        }
+        handleMultifaceCards(msg, seconds, scryfallCard);
     } else {
         let finalFormat = {
             image: scryfallCard.image_uris.normal,

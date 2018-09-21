@@ -1,7 +1,6 @@
-function handleTransform(scryfallObject) {
+const cardHelpers = require('./cardHelpers');
 
-    let faceArray = [];
-
+function handleTransform(msg, seconds, scryfallObject) {
     for (let i = 0; i < scryfallObject.card_faces.length; i++) {
         let final = {
             name: scryfallObject.card_faces[i].name,
@@ -9,10 +8,28 @@ function handleTransform(scryfallObject) {
             cardUrl: scryfallObject.scryfall_uri,
         }
 
-        faceArray.push(final);
+        cardHelpers.imageEmbed(msg, seconds, final);
     }
-
-    return faceArray
 }
 
-module.exports = { handleTransform };
+function handleFlip(msg, seconds, scryfallObject) {
+    final =  {
+        name: scryfallObject.name,
+        image: scryfallObject.image_uris.normal,
+        cardUrl: scryfallObject.scryfall_uri
+    }
+
+    cardHelpers.imageEmbed(msg, seconds, final);
+}
+
+function handleSplit(msg, seconds, scryfallObject) {
+    final = {
+        name: scryfallObject.name,
+        image: scryfallObject.image_uris.normal,
+        cardUrl: scryfallObject.scryfall_uri
+    }
+
+    cardHelpers.imageEmbed(msg, seconds, final);
+}
+
+module.exports = { handleTransform, handleFlip, handleSplit };
