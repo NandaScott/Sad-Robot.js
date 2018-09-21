@@ -19,11 +19,11 @@ const cardFaceMapping = {
     split: multifaceHandlers.handleSplit
 };
 
-function handleMultifaceCards(msg, seconds, scryfallObject) {
+function handleMultifaceCards(scryfallObject) {
     const handler = cardFaceMapping[scryfallObject.layout];
 
     if (handler) {
-        return handler(msg, seconds, scryfallObject);
+        return handler(scryfallObject);
     }
 }
 
@@ -76,7 +76,17 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
     if ('card_faces' in scryfallCard) {
-        handleMultifaceCards(msg, seconds, scryfallCard);
+        console.log(scryfallCard);
+        const params = handleMultifaceCards(scryfallCard);
+
+        if (Array.isArray(params)) {
+            console.log(params)
+            for (let i = 0; i < params.length; i++) {
+                cardHelpers.imageEmbed(msg, seconds, params[i]);
+            }
+        } else {
+            cardHelpers.imageEmbed(msg, seconds, params)
+        }
     } else {
         let finalFormat = {
             image: scryfallCard.image_uris.normal,
