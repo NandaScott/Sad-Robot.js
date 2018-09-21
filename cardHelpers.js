@@ -6,7 +6,7 @@ function imageEmbed(msg, seconds, object) {
 
     let embed = new Discord.RichEmbed()
         .setImage(object.image)
-        .setURL(object.cardUrl)
+        .setURL(object.url)
         .setTitle(`**${object.name}**`)
         .setColor(blue)
         .setFooter(`Fetch took: ${seconds} seconds.`);

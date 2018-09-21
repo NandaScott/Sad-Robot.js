@@ -1,34 +1,103 @@
-function handleTransform(scryfallObject) {
+function handleTransform(scryfallObject, returnArray=false) {
+    let base = {
+        url: scryfallObject.scryfall_uri,
+        usd: ('usd' in scryfallObject) ? scryfallObject.usd : '',
+        eur: ('eur' in scryfallObject) ? scryfallObject.eur : '',
+        tix: ('tix' in scryfallObject) ? scryfallObject.tix : '',
+        legalities: scryfallObject.legalities,
+        name: '',
+        image: '',
+        power: '',
+        toughness: '',
+        cost: '',
+        typeLine: '',
+        oracleText: ''
+    }
 
-    let faceArray = [];
+    if (returnArray) {
+        let array = [];
 
-    for (let i = 0; i < scryfallObject.card_faces.length; i++) {
-        let final = {
-            name: scryfallObject.card_faces[i].name,
-            image: scryfallObject.card_faces[i].image_uris.normal,
-            cardUrl: scryfallObject.scryfall_uri,
+        for (let i = 0; i < scryfallObject.card_faces.length; i++) {
+
+            base.name = scryfallObject.card_faces[i].name,
+            base.image = scryfallObject.card_faces[i].image_uris.normal,
+            base.power = scryfallObject.card_faces[i].power,
+            base.toughness = scryfallObject.card_faces[i].toughness,
+            base.cost = scryfallObject.card_faces[i].mana_cost,
+            base.typeLine = scryfallObject.card_faces[i].type_line,
+            base.oracleText = scryfallObject.card_faces[i].oracle_text
+
+            array.push(base);
         }
 
-        faceArray.push(final);
+        return array
     }
 
-    return faceArray
+    return base
 }
 
-function handleFlip(scryfallObject) {
-    return {
+function handleFlip(scryfallObject, returnArray=false) {
+    let base = {
         name: scryfallObject.name,
         image: scryfallObject.image_uris.normal,
-        cardUrl: scryfallObject.scryfall_uri
+        url: scryfallObject.scryfall_uri,
+        power: ('power' in scryfallObject) ? scryfallObject.power : '',
+        toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
+        cost: ('mana_cost' in scryfallObject) ? scryfallObject.mana_cost : '',
+        usd: ('usd' in scryfallObject) ? scryfallObject.usd : '',
+        eur: ('eur' in scryfallObject) ? scryfallObject.eur : '',
+        tix: ('tix' in scryfallObject) ? scryfallObject.tix : '',
+        legalities: scryfallObject.legalities,
+        typeLine: '',
+        oracleText: ''
     }
+
+    if (returnArray) {
+        let array = [];
+
+        for (let i = 0; i < scryfallObject.card_faces.length; i++) {
+            base.typeLine = scryfallObject.card_faces[i].type_line
+            base.oracleText = scryfallObject.card_faces[i].oracle_text
+
+            array.push(base);
+        }
+
+        return array;
+    }
+
+    return base
 }
 
-function handleSplit(scryfallObject) {
-    return {
+function handleSplit(scryfallObject, returnArray=false) {
+    let base =  {
         name: scryfallObject.name,
         image: scryfallObject.image_uris.normal,
-        cardUrl: scryfallObject.scryfall_uri
+        url: scryfallObject.scryfall_uri,
+        power: ('power' in scryfallObject) ? scryfallObject.power : '',
+        toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
+        cost: ('mana_cost' in scryfallObject) ? scryfallObject.mana_cost : '',
+        usd: ('usd' in scryfallObject) ? scryfallObject.usd : '',
+        eur: ('eur' in scryfallObject) ? scryfallObject.eur : '',
+        tix: ('tix' in scryfallObject) ? scryfallObject.tix : '',
+        legalities: scryfallObject.legalities,
+        typeLine: '',
+        oracleText: ''
     }
+
+    if (returnArray) {
+        let array = [];
+
+        for (let i=0; i < scryfallObject.card_faces.length; i++) {
+            base.typeLine = scryfallObject.card_faces[i].type_line
+            base.oracleText = scryfallObject.card_faces[i].oracle_text
+
+            array.push(base);
+        }
+
+        return array;
+    }
+
+    return base
 }
 
 module.exports = { handleTransform, handleFlip, handleSplit };

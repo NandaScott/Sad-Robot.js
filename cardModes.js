@@ -19,11 +19,11 @@ const cardFaceMapping = {
     split: multifaceHandlers.handleSplit
 };
 
-function handleMultifaceCards(scryfallObject) {
+function handleMultifaceCards(scryfallObject, returnArray) {
     const handler = cardFaceMapping[scryfallObject.layout];
 
     if (handler) {
-        return handler(scryfallObject);
+        return handler(scryfallObject, returnArray);
     }
 }
 
@@ -75,26 +75,22 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    if ('card_faces' in scryfallCard) {
-        console.log(scryfallCard);
-        const params = handleMultifaceCards(scryfallCard);
+    let params;
 
-        if (Array.isArray(params)) {
-            console.log(params)
+    switch (scryfallCard.layout) {
+        default:
+            params = handleMultifaceCards(scryfallCard, returnArray=false);
+
+            cardHelpers.imageEmbed(msg, seconds, params);
+            break;
+
+        case 'transform':
+            params = handleMultifaceCards(scryfallCard, returnArray=true);
+
             for (let i = 0; i < params.length; i++) {
                 cardHelpers.imageEmbed(msg, seconds, params[i]);
             }
-        } else {
-            cardHelpers.imageEmbed(msg, seconds, params)
-        }
-    } else {
-        let finalFormat = {
-            image: scryfallCard.image_uris.normal,
-            cardUrl: scryfallCard.scryfall_uri,
-            name: scryfallCard.name
-        }
-
-        cardHelpers.imageEmbed(msg, seconds, finalFormat);
+            break;
     }
 
 }
