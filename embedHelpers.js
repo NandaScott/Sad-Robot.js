@@ -77,6 +77,23 @@ function oracleEmbed(msg, seconds, object) {
 }
 
 function priceEmbed(msg, seconds, object) {
+
+    if (Array.isArray(object)) {
+
+        let embed = new Discord.RichEmbed()
+            .setURL(object[0].url)
+            .setTitle(`**${object[0].name}**`)
+            .setThumbnail(object[0].image)
+            .addField('USD', object[0].usd)
+            .addField('EUR', object[0].eur)
+            .addField('TIX', object[0].tix)
+            .setColor(blue)
+            .setFooter(`Fetch took: ${seconds} seconds.`);
+
+        msg.channel.send({ embed });
+        return;
+    }
+
     let embed = new Discord.RichEmbed()
         .setURL(object.url)
         .setTitle(`**${object.name}**`)
