@@ -108,19 +108,34 @@ function priceEmbed(msg, seconds, object) {
 }
 
 function legalEmbed(msg, seconds, object) {
+
+    let url, name, thumbnail, legalities;
+
+    if (Array.isArray(object)) {
+        url = object[0].url;
+        name = object[0].name;
+        thumbnail = object[0].thumbnail;
+        legalities = object[0].legalities;
+    } else {
+        url = object.url;
+        name = object.name;
+        thumbnail = object.thumbnail;
+        legalities = object.legalities;
+    }
+
     let embed = new Discord.RichEmbed()
-        .setURL(object.url)
-        .setTitle(`**${object.name}**`)
-        .setThumbnail(object.image)
+        .setURL(url)
+        .setTitle(`**${name}**`)
+        .setThumbnail(thumbnail)
         .setColor(0x1b6f9)
         .setFooter(`Fetch took: ${seconds} seconds.`)
 
-    for (let key in object.legalities) {
-        if (object.legalities.hasOwnProperty(key)) {
+    for (let key in legalities) {
+        if (legalities.hasOwnProperty(key)) {
 
             let emoji;
 
-            switch (object.legalities[key]) {
+            switch (legalities[key]) {
                 case 'legal':
                     emoji = '✅';
                     break;
@@ -137,7 +152,7 @@ function legalEmbed(msg, seconds, object) {
 
             embed.addField(
                 key.charAt(0).toUpperCase() + key.slice(1),
-                (object.legalities[key].charAt(0).toUpperCase() + object.legalities[key].slice(1)).replace('_', ' ') + ` ${emoji}`,
+                (legalities[key].charAt(0).toUpperCase() + legalities[key].slice(1)).replace('_', ' ') + ` ${emoji}`,
                 true
             );
         }

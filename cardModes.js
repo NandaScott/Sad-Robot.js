@@ -47,6 +47,8 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardOracleHandler(msg, paramsObject, null, getCard=true);
                 case 'price':
                     return cardPriceHandler(msg, paramsObject, null, getCard=true);
+                case 'legal':
+                    return cardLegalHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -58,6 +60,8 @@ function checkCache(msg, paramsObject, embedType) {
             case 'oracle':
                 return cardOracleHandler(msg, paramsObject, scryfall);
             case 'price':
+                return cardPriceHandler(msg, paramsObject, scryfall);
+            case 'legal':
                 return cardPriceHandler(msg, paramsObject, scryfall);
         }
     });
@@ -156,6 +160,34 @@ async function cardPriceHandler(msg, paramsObject, cacheObject, getCard=false) {
     params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.priceEmbed(msg, seconds, params);
+}
+
+async function cardLegalHandler(msg, paramsObject, cacheObject, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard;
+    
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.cardsByName(paramsObject);
+
+        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
+
+        if (scryfallCard.object === 'error') {
+            msg.channel.send(scryfallCard.details);
+            return;
+        }
+    } else {
+        scryfallCard = cacheObject;
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params;
+
+    params = handleMultifaceCards(scryfallCard, returnArray=true);
+
+    embedHelpers.legalEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };
