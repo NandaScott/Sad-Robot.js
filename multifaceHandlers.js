@@ -20,7 +20,7 @@ function handleTransform(scryfallObject, returnArray=false) {
         for (let i = 0; i < scryfallObject.card_faces.length; i++) {
 
             base.name = scryfallObject.card_faces[i].name,
-            base.image = scryfallObject.card_faces[i].image_uris.normal,
+            base.image = scryfallObject.card_faces[i].image_uris.border_crop,
             base.power = scryfallObject.card_faces[i].power,
             base.toughness = scryfallObject.card_faces[i].toughness,
             base.cost = scryfallObject.card_faces[i].mana_cost,
@@ -39,7 +39,7 @@ function handleTransform(scryfallObject, returnArray=false) {
 function handleFlip(scryfallObject, returnArray=false) {
     let base = {
         name: scryfallObject.name,
-        image: scryfallObject.image_uris.normal,
+        image: scryfallObject.image_uris.border_crop,
         url: scryfallObject.scryfall_uri,
         power: ('power' in scryfallObject) ? scryfallObject.power : '',
         toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
@@ -71,7 +71,7 @@ function handleFlip(scryfallObject, returnArray=false) {
 function handleSplit(scryfallObject, returnArray=false) {
     let base =  {
         name: scryfallObject.name,
-        image: scryfallObject.image_uris.normal,
+        image: scryfallObject.image_uris.border_crop,
         url: scryfallObject.scryfall_uri,
         power: ('power' in scryfallObject) ? scryfallObject.power : '',
         toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
