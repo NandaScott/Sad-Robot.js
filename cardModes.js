@@ -1,4 +1,4 @@
-const cardHelpers = require('./cardHelpers');
+const embedHelpers = require('./embedHelpers');
 const requestHelpers = require('./requestsHelpers');
 const multifaceHandlers = require('./multifaceHandlers');
 const redis = require('redis');
@@ -86,14 +86,14 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
         params = handleMultifaceCards(scryfallCard, returnArray=true);
 
         for (let i = 0; i < params.length; i++) {
-            cardHelpers.imageEmbed(msg, seconds, params[i]);
+            embedHelpers.imageEmbed(msg, seconds, params[i]);
         }
         return;
     }
     
     params = handleMultifaceCards(scryfallCard, returnArray=false);
 
-    cardHelpers.imageEmbed(msg, seconds, params);
+    embedHelpers.imageEmbed(msg, seconds, params);
 
 }
 
@@ -122,7 +122,7 @@ async function cardOracleHandler(msg, paramsObject, cacheObject, getCard=false) 
 
     params = handleMultifaceCards(scryfallCard, returnArray=true);
 
-    cardHelpers.oracleEmbed(msg, seconds, params);
+    embedHelpers.oracleEmbed(msg, seconds, params);
 
 }
 
