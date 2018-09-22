@@ -43,13 +43,13 @@ function handleCardFetch(msg) {
                         cardModes.checkCache(msg, cardsFound[i], 'oracle');
                         break;
                     case 'price':
-                        cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'price');
+                        cardModes.checkCache(msg, cardsFound[i], 'price');
                         break;
                     case 'set':
-                        cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'set');
+                        cardModes.checkCache(msg, cardsFound[i], 'set');
                         break;
                     case 'legal':
-                        cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'legal');
+                        cardModes.checkCache(msg, cardsFound[i], 'legal');
                         break;
                 }
             }, 100);
