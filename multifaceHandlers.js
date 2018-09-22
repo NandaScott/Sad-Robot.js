@@ -100,4 +100,23 @@ function handleSplit(scryfallObject, returnArray=false) {
     return base
 }
 
-module.exports = { handleTransform, handleFlip, handleSplit };
+function handleNormal(scryfallObject, returnArray=false) {
+    let base =  {
+        name: scryfallObject.name,
+        image: scryfallObject.image_uris.border_crop,
+        url: scryfallObject.scryfall_uri,
+        power: ('power' in scryfallObject) ? scryfallObject.power : '',
+        toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
+        cost: ('mana_cost' in scryfallObject) ? scryfallObject.mana_cost : '',
+        usd: ('usd' in scryfallObject) ? scryfallObject.usd : '',
+        eur: ('eur' in scryfallObject) ? scryfallObject.eur : '',
+        tix: ('tix' in scryfallObject) ? scryfallObject.tix : '',
+        legalities: scryfallObject.legalities,
+        typeLine: scryfallObject.type_line,
+        oracleText: scryfallObject.oracle_text
+    }
+
+    return base;
+}
+
+module.exports = { handleTransform, handleFlip, handleSplit, handleNormal };
