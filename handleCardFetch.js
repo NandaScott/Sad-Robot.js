@@ -1,10 +1,13 @@
 const cardModes = require('./cardModes');
 
 function handleCardFetch(msg) {
-    let cardsFound = msg.content.match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g);
 
-    if (cardsFound) {
-        cardsFound.map((card) => {
+    let cardsFound;
+
+    try {
+        cardsFound = msg.content
+        .match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g)
+        .map((card) => {
             let parts = card.match(/[\w\s\,\'\.:]+/g);
 
             if (parts.length < 2) {
@@ -52,6 +55,8 @@ function handleCardFetch(msg) {
                 }
             }, 100);
         }
+    } catch (error) {
+        return;
     }
 }
 
