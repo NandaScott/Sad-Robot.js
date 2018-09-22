@@ -37,7 +37,7 @@ function handleCardFetch(msg) {
                     cardModes.checkCache(msg, cardsFound[i], 'image');
                     break;
                 case 'oracle':
-                    cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'oracle');
+                    cardModes.checkCache(msg, cardsFound[i], 'oracle');
                     break;
                 case 'price':
                     cardModes.checkCache(msg, scryfallBaseUrl, cardsFound[i], 'price');

@@ -16,7 +16,8 @@ cache.on('error', (err) => {
 const cardFaceMapping = {
     transform: multifaceHandlers.handleTransform,
     flip: multifaceHandlers.handleFlip,
-    split: multifaceHandlers.handleSplit
+    split: multifaceHandlers.handleSplit,
+    normal: multifaceHandlers.handleNormal
 };
 
 function handleMultifaceCards(scryfallObject, returnArray) {
@@ -42,6 +43,8 @@ function checkCache(msg, paramsObject, embedType) {
             switch (embedType) {
                 case 'image':
                     return cardImageHandler(msg, paramsObject, null, getCard=true);
+                case 'oracle':
+                    return cardOracleHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -49,6 +52,8 @@ function checkCache(msg, paramsObject, embedType) {
 
         switch (embedType) {
             case 'image':
+                return cardImageHandler(msg, paramsObject, scryfall);
+            case 'oracle':
                 return cardImageHandler(msg, paramsObject, scryfall);
         }
     });
@@ -77,21 +82,47 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
 
     let params;
 
-    switch (scryfallCard.layout) {
-        default:
-            params = handleMultifaceCards(scryfallCard, returnArray=false);
+    if (scryfallCard.layout === 'transform') {
+        params = handleMultifaceCards(scryfallCard, returnArray=true);
 
-            cardHelpers.imageEmbed(msg, seconds, params);
-            break;
-
-        case 'transform':
-            params = handleMultifaceCards(scryfallCard, returnArray=true);
-
-            for (let i = 0; i < params.length; i++) {
-                cardHelpers.imageEmbed(msg, seconds, params[i]);
-            }
-            break;
+        for (let i = 0; i < params.length; i++) {
+            cardHelpers.imageEmbed(msg, seconds, params[i]);
+        }
+        return;
     }
+    
+    params = handleMultifaceCards(scryfallCard, returnArray=false);
+
+    cardHelpers.imageEmbed(msg, seconds, params);
+
+}
+
+async function cardOracleHandler(msg, paramsObject, cacheObject, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard;
+    
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.cardsByName(paramsObject);
+
+        cache.setex(`${paramsObject.card} oracle`, 86400, JSON.stringify(scryfallCard));
+
+        if (scryfallCard.object === 'error') {
+            msg.channel.send(scryfallCard.details);
+            return;
+        }
+    } else {
+        scryfallCard = cacheObject;
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params;
+
+    params = handleMultifaceCards(scryfallCard, returnArray=true);
+
+    cardHelpers.oracleEmbed(msg, seconds, params);
 
 }
 
