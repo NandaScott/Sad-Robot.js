@@ -2,12 +2,12 @@ const cardModes = require('./cardModes');
 
 function handleCardFetch(msg) {
 
-    let cardsFound;
+    let cardsFound = msg.content
+        .match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g);
 
-    try {
-        cardsFound = msg.content
-        .match(/(\[\[[\w\s\'\.\,|:]+\]\])+/g)
-        .map((card) => {
+    if (cardsFound) {
+
+        cardsFound = cardsFound.map((card) => {
             let parts = card.match(/[\w\s\,\'\.:]+/g);
 
             if (parts.length < 2) {
@@ -35,7 +35,6 @@ function handleCardFetch(msg) {
 
         for (let i = 0; i < cardsFound.length; i++) {
             setTimeout(() => {
-
                 switch (cardsFound[i].mode) {
                     default:
                         cardModes.checkCache(msg, cardsFound[i], 'image');
@@ -55,8 +54,7 @@ function handleCardFetch(msg) {
                 }
             }, 100);
         }
-    } catch (error) {
-        return;
+
     }
 }
 
