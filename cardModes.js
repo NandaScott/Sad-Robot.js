@@ -54,7 +54,7 @@ function checkCache(msg, paramsObject, embedType) {
             case 'image':
                 return cardImageHandler(msg, paramsObject, scryfall);
             case 'oracle':
-                return cardImageHandler(msg, paramsObject, scryfall);
+                return cardOracleHandler(msg, paramsObject, scryfall);
         }
     });
 }
