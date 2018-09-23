@@ -20,7 +20,7 @@ const cardFaceMapping = {
     normal: multifaceHandlers.handleNormal
 };
 
-function handleMultifaceCards(scryfallObject, returnArray) {
+function handleCardLayout(scryfallObject, returnArray) {
     const handler = cardFaceMapping[scryfallObject.layout];
 
     if (handler) {
@@ -100,14 +100,14 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
     let params;
 
     if (scryfallCard.layout === 'transform') {
-        params = handleMultifaceCards(scryfallCard, returnArray=true);
+        params = handleCardLayout(scryfallCard, returnArray=true);
 
         for (let i = 0; i < params.length; i++) {
             embedHelpers.imageEmbed(msg, seconds, params[i]);
         }
         return;
     } else {
-        params = handleMultifaceCards(scryfallCard, returnArray=false);
+        params = handleCardLayout(scryfallCard, returnArray=false);
     }
 
 
@@ -140,7 +140,7 @@ async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleCardLayout(scryfallCard, returnArray=true);
 
     embedHelpers.oracleEmbed(msg, seconds, params);
 
@@ -170,7 +170,7 @@ async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleCardLayout(scryfallCard, returnArray=true);
 
     embedHelpers.priceEmbed(msg, seconds, params);
 }
@@ -198,7 +198,7 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleCardLayout(scryfallCard, returnArray=true);
 
     embedHelpers.legalEmbed(msg, seconds, params);
 }
@@ -230,14 +230,14 @@ async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
     let params;
 
     if (scryfallCard.layout === 'transform') {
-        params = handleMultifaceCards(scryfallCard, returnArray=true);
+        params = handleCardLayout(scryfallCard, returnArray=true);
 
         for (let i = 0; i < params.length; i++) {
             embedHelpers.imageEmbed(msg, seconds, params[i]);
         }
         return;
     } else {
-        params = handleMultifaceCards(scryfallCard, returnArray=true);
+        params = handleCardLayout(scryfallCard, returnArray=true);
     }
 
 
@@ -284,7 +284,7 @@ async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params = handleMultifaceCards(scryfallCard);
+    let params = handleCardLayout(scryfallCard);
 
     params.rulingsList = ('rulingsList' in scryfallCard) ? scryfallCard.rulingsList : cardRulings.data;
 
