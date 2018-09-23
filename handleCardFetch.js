@@ -51,6 +51,9 @@ function handleCardFetch(msg) {
                     case 'legal':
                         cardModes.checkCache(msg, cardsFound[i], 'legal');
                         break;
+                    case 'rules':
+                        cardModes.checkCache(msg, cardsFound[i], 'rules');
+                        break;
                 }
             }, 100);
         }

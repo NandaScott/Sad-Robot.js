@@ -28,7 +28,17 @@ function cardsByNameSet(paramsObject) {
     })
     .catch((error) => {
         return error.response.data;
-    })
+    });
 }
 
-module.exports = { cardsByName, cardsByNameSet };
+function cardRulesById(cardId) {
+    return axios.get(`${scryfallBaseUrl}/cards/${cardId}/rulings`)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            return error.response.data;
+        });
+}
+
+module.exports = { cardsByName, cardsByNameSet, cardRulesById };

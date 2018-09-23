@@ -161,4 +161,20 @@ function legalEmbed(msg, seconds, object) {
     msg.channel.send({ embed });
 }
 
-module.exports = { imageEmbed, oracleEmbed, priceEmbed, legalEmbed };
+function rulesEmbed(msg, seconds, object) {
+
+    let embed = new Discord.RichEmbed()
+        .setURL(object.url)
+        .setTitle(`**${object.name}**`)
+        .setThumbnail(object.thumbnail)
+        .setColor(blue)
+        .setFooter(`Fetch took: ${seconds} seconds.`);
+
+    for (let i=0; i < object.rulingsList.length; i++) {
+        embed.addField(object.rulingsList[i].published_at, object.rulingsList[i].comment);
+    }
+
+    msg.channel.send({ embed });
+}
+
+module.exports = { imageEmbed, oracleEmbed, priceEmbed, legalEmbed, rulesEmbed };

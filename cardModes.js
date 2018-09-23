@@ -51,27 +51,29 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardLegalHandler(msg, paramsObject, null, getCard=true);
                 case 'set':
                     return cardSetHandler(msg, paramsObject, null, getCard=true);
+                case 'rules':
+                    return cardRulesHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
-        let scryfall = JSON.parse(reply);
-
         switch (embedType) {
             case 'image':
-                return cardImageHandler(msg, paramsObject, scryfall);
+                return cardImageHandler(msg, paramsObject, reply);
             case 'oracle':
-                return cardOracleHandler(msg, paramsObject, scryfall);
+                return cardOracleHandler(msg, paramsObject, reply);
             case 'price':
-                return cardPriceHandler(msg, paramsObject, scryfall);
+                return cardPriceHandler(msg, paramsObject, reply);
             case 'legal':
-                return cardPriceHandler(msg, paramsObject, scryfall);
+                return cardPriceHandler(msg, paramsObject, reply);
             case 'set':
-                return cardSetHandler(msg, paramsObject, scryfall);
+                return cardSetHandler(msg, paramsObject, reply);
+            case 'rules':
+                return cardRulesHandler(msg, paramsObject, reply);
         }
     });
 }
 
-async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
+async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
@@ -87,7 +89,7 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
             return;
         }
     } else {
-        scryfallCard = cacheObject;
+        scryfallCard = JSON.parse(cacheReply);
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
@@ -109,7 +111,7 @@ async function cardImageHandler(msg, paramsObject, cacheObject, getCard=false) {
 
 }
 
-async function cardOracleHandler(msg, paramsObject, cacheObject, getCard=false) {
+async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
@@ -125,7 +127,7 @@ async function cardOracleHandler(msg, paramsObject, cacheObject, getCard=false) 
             return;
         }
     } else {
-        scryfallCard = cacheObject;
+        scryfallCard = JSON.parse(cacheReply);
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
@@ -138,7 +140,7 @@ async function cardOracleHandler(msg, paramsObject, cacheObject, getCard=false) 
 
 }
 
-async function cardPriceHandler(msg, paramsObject, cacheObject, getCard=false) {
+async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
@@ -154,7 +156,7 @@ async function cardPriceHandler(msg, paramsObject, cacheObject, getCard=false) {
             return;
         }
     } else {
-        scryfallCard = cacheObject;
+        scryfallCard = JSON.parse(cacheReply);
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
@@ -166,7 +168,7 @@ async function cardPriceHandler(msg, paramsObject, cacheObject, getCard=false) {
     embedHelpers.priceEmbed(msg, seconds, params);
 }
 
-async function cardLegalHandler(msg, paramsObject, cacheObject, getCard=false) {
+async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
@@ -182,7 +184,7 @@ async function cardLegalHandler(msg, paramsObject, cacheObject, getCard=false) {
             return;
         }
     } else {
-        scryfallCard = cacheObject;
+        scryfallCard = JSON.parse(cacheReply);
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
@@ -194,7 +196,7 @@ async function cardLegalHandler(msg, paramsObject, cacheObject, getCard=false) {
     embedHelpers.legalEmbed(msg, seconds, params);
 }
 
-async function cardSetHandler(msg, paramsObject, cacheObject, getCard=false) {
+async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
@@ -211,7 +213,7 @@ async function cardSetHandler(msg, paramsObject, cacheObject, getCard=false) {
             return;
         }
     } else {
-        scryfallCard = cacheObject;
+        scryfallCard = JSON.parse(cacheReply);
     }
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
@@ -230,6 +232,50 @@ async function cardSetHandler(msg, paramsObject, cacheObject, getCard=false) {
     params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.imageEmbed(msg, seconds, params);
+}
+
+async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard, cardRulings;
+
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.cardsByName(paramsObject);
+        cardRulings = await requestHelpers.cardRulesById(scryfallCard.id);
+
+        if (scryfallCard.object === 'error') {
+            msg.channel.send(scryfallCard.details);
+            return;
+        }
+
+        if (cardRulings.data.length == 0) {
+            msg.channel.send(`${scryfallCard.name} has no current rulings.`);
+            return;
+        }
+
+        // Cleaning up data for combining
+        delete scryfallCard.object;
+        delete cardRulings.object;
+        delete cardRulings.has_more;
+        cardRulings.rulingsList = cardRulings.data;
+        delete cardRulings.data;
+
+        let combine = Object.assign(scryfallCard, cardRulings);
+
+        cache.setex(`${paramsObject.card} rules`, 86400, JSON.stringify(combine));
+
+    } else {
+        scryfallCard = JSON.parse(cacheReply);
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params = handleMultifaceCards(scryfallCard);
+
+    params.rulingsList = ('rulingsList' in scryfallCard) ? scryfallCard.rulingsList : cardRulings.data;
+
+    embedHelpers.rulesEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };
