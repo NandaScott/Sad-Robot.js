@@ -82,12 +82,15 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-        cache.setex(`${paramsObject.card} image`, 86400, JSON.stringify(scryfallCard));
-
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+            
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
+
+        cache.setex(`${paramsObject.card} image`, 86400, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -121,12 +124,16 @@ async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-        cache.setex(`${paramsObject.card} oracle`, 86400, JSON.stringify(scryfallCard));
-
+        
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
+
+        cache.setex(`${paramsObject.card} oracle`, 86400, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -148,12 +155,15 @@ async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
-
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
+
+        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -174,12 +184,14 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
-
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
+        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -200,13 +212,15 @@ async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         scryfallCard = await requestHelpers.cardsByNameSet(paramsObject);
 
-        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 86400, JSON.stringify(scryfallCard));
-
-
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
+
+        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 86400, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -241,7 +255,10 @@ async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
         cardRulings = await requestHelpers.cardRulesById(scryfallCard.id);
 
         if (scryfallCard.object === 'error') {
-            msg.channel.send(scryfallCard.details);
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
             return;
         }
 

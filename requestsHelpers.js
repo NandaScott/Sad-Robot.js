@@ -41,4 +41,18 @@ function cardRulesById(cardId) {
         });
 }
 
-module.exports = { cardsByName, cardsByNameSet, cardRulesById };
+function autocompleteName(paramsObject) {
+    return axios.get(`${scryfallBaseUrl}/cards/autocomplete`,  {
+        params: {
+            q: paramsObject.card
+        }
+    })
+    .then((response) => {
+        return response.data;
+    })
+    .catch((error) => {
+        return error.response.data;
+    });
+}
+
+module.exports = { cardsByName, cardsByNameSet, cardRulesById, autocompleteName };
