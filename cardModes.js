@@ -103,9 +103,10 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
             embedHelpers.imageEmbed(msg, seconds, params[i]);
         }
         return;
+    } else {
+        params = handleMultifaceCards(scryfallCard, returnArray=false);
     }
-    
-    params = handleMultifaceCards(scryfallCard, returnArray=false);
+
 
     embedHelpers.imageEmbed(msg, seconds, params);
 
@@ -132,9 +133,7 @@ async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params;
-
-    params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.oracleEmbed(msg, seconds, params);
 
@@ -161,9 +160,7 @@ async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params;
-
-    params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.priceEmbed(msg, seconds, params);
 }
@@ -189,9 +186,7 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    let params;
-
-    params = handleMultifaceCards(scryfallCard, returnArray=true);
+    let params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.legalEmbed(msg, seconds, params);
 }
@@ -227,9 +222,10 @@ async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
             embedHelpers.imageEmbed(msg, seconds, params[i]);
         }
         return;
+    } else {
+        params = handleMultifaceCards(scryfallCard, returnArray=true);
     }
 
-    params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.imageEmbed(msg, seconds, params);
 }
