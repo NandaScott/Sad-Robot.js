@@ -11,6 +11,7 @@ Here is a list of patterns I look for:
 [[cardname | price]] .... Fetch a card's price
 [[cardname | set:<code>]] Fetch a card printing as an image
 [[cardname | legal]] .... Fetch a card's legality
+[[cardname | rules]] .... Fetch a card's rulings
 \`\`\`
 `;
 
