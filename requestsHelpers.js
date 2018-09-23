@@ -12,8 +12,23 @@ function cardsByName(paramsObject) {
         return response.data;
     })
     .catch((error) => {
-        return error.response.data
+        return error.response.data;
     });
 }
 
-module.exports = { cardsByName };
+function cardsByNameSet(paramsObject) {
+    return axios.get(`${scryfallBaseUrl}/cards/named`,  {
+        params: {
+            fuzzy: paramsObject.card,
+            set: paramsObject.setCode
+        }
+    })
+    .then((response) => {
+        return response.data;
+    })
+    .catch((error) => {
+        return error.response.data;
+    })
+}
+
+module.exports = { cardsByName, cardsByNameSet };

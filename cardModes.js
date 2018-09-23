@@ -49,6 +49,8 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardPriceHandler(msg, paramsObject, null, getCard=true);
                 case 'legal':
                     return cardLegalHandler(msg, paramsObject, null, getCard=true);
+                case 'set':
+                    return cardSetHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -63,6 +65,8 @@ function checkCache(msg, paramsObject, embedType) {
                 return cardPriceHandler(msg, paramsObject, scryfall);
             case 'legal':
                 return cardPriceHandler(msg, paramsObject, scryfall);
+            case 'set':
+                return cardSetHandler(msg, paramsObject, scryfall);
         }
     });
 }
@@ -188,6 +192,44 @@ async function cardLegalHandler(msg, paramsObject, cacheObject, getCard=false) {
     params = handleMultifaceCards(scryfallCard, returnArray=true);
 
     embedHelpers.legalEmbed(msg, seconds, params);
+}
+
+async function cardSetHandler(msg, paramsObject, cacheObject, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard;
+    
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.cardsByNameSet(paramsObject);
+
+        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 86400, JSON.stringify(scryfallCard));
+
+
+        if (scryfallCard.object === 'error') {
+            msg.channel.send(scryfallCard.details);
+            return;
+        }
+    } else {
+        scryfallCard = cacheObject;
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params;
+
+    if (scryfallCard.layout === 'transform') {
+        params = handleMultifaceCards(scryfallCard, returnArray=true);
+
+        for (let i = 0; i < params.length; i++) {
+            embedHelpers.imageEmbed(msg, seconds, params[i]);
+        }
+        return;
+    }
+
+    params = handleMultifaceCards(scryfallCard, returnArray=true);
+
+    embedHelpers.imageEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };
