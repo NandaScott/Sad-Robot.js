@@ -1,6 +1,6 @@
 const embedHelpers = require('./embedHelpers');
 const requestHelpers = require('./requestsHelpers');
-const multifaceHandlers = require('./multifaceHandlers');
+const cardLayoutHandlers = require('./cardLayoutHandlers');
 const redis = require('redis');
 
 const cache = redis.createClient(6379, '127.0.0.1');
@@ -13,15 +13,15 @@ cache.on('error', (err) => {
     console.log(err);
 });
 
-const cardFaceMapping = {
-    transform: multifaceHandlers.handleTransform,
-    flip: multifaceHandlers.handleFlip,
-    split: multifaceHandlers.handleSplit,
-    normal: multifaceHandlers.handleNormal
+const cardLayoutMapping = {
+    transform: cardLayoutHandlers.handleTransform,
+    flip: cardLayoutHandlers.handleFlip,
+    split: cardLayoutHandlers.handleSplit,
+    normal: cardLayoutHandlers.handleNormal
 };
 
 function handleCardLayout(scryfallObject, returnArray) {
-    const handler = cardFaceMapping[scryfallObject.layout];
+    const handler = cardLayoutMapping[scryfallObject.layout];
 
     if (handler) {
         return handler(scryfallObject, returnArray);
