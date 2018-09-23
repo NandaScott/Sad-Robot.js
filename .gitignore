@@ -1,3 +1,4 @@
 node_modules/
 credentials.json
 rdb.dump
+example_card_objects
