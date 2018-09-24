@@ -333,6 +333,22 @@ async function cardFlavorHandler(msg, paramsObject, cacheReply, getCard = false)
 
 async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false) {
 
+    let forbiddenCards = [
+        'plains',
+        'island',
+        'swamp',
+        'mountain',
+        'forest'
+    ]
+
+    if (forbiddenCards.indexOf(paramsObject.card)) {
+        msg.channel.send(
+            'You may not search that card with the `unique` mode.\nHere\'s a link you can use:\n' + 
+            `https://scryfall.com/search?q=!"${paramsObject.card.replace(' ', '+')}"&unique=prints`
+        )
+        return;
+    }
+
     let startTimer = new Date().getTime();
     let cardList;
 
@@ -343,7 +359,14 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
         if (cardList.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${cardList.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(cardList.details);
+
+            // If no autocompletion is found just break.
+            if (autocomplete.data == 0) {
+                return;
+            }
+
+            let errorString = `\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
             msg.channel.send(errorString);
             return;
         }
@@ -356,27 +379,38 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
 
     let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
 
-    // let params = handleCardLayout(scryfallCard);
-
     let newList = cardList.data.map((card) => {
-        return `**[${card.set.toUpperCase()}: ${card.set_name}](${card.scryfall_uri})**`;
+        return `[${card.set.toUpperCase()}: ${card.set_name}](${card.scryfall_uri})`;
     });
 
     let total = 0;
+    let batch = {};
+    let currentBatch = 1;
+    batch[currentBatch] = [];
 
     for (let i=0; i < newList.length; i++) {
+
         total = total + newList[i].length;
+
+        if (total < 2000) {
+            batch[currentBatch].push(newList[i]);
+            batch[currentBatch]
+        } else {
+            total = 0;
+            currentBatch++
+            batch[currentBatch] = [];
+        }
     }
 
-    console.log(total);
+    for (let key in batch) {
+        let params = {
+            url: `https://scryfall.com/search?q=!"${cardList.data[0].name.replace(' ', '+')}"&unique=prints`,
+            cardList: batch[key],
+            name: cardList.data[0].name
+        }
 
-    let params = {
-        url: `https://scryfall.com/search?q=${cardList.data[0].name.replace(' ', '+')}&unique=prints`,
-        cardList: newList,
-        name: cardList.data[0].name
+        embedHelpers.uniquePrintsEmbed(msg, seconds, params);
     }
-
-    embedHelpers.uniquePrintsEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };

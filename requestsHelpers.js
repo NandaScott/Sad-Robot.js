@@ -58,7 +58,7 @@ function autocompleteName(paramsObject) {
 function uniquePrints(paramsObject) {
     return axios.get(`${scryfallBaseUrl}/cards/search`,  {
         params: {
-            q: `${paramsObject.card}`,
+            q: `!"${paramsObject.card}"`,
             unique: 'prints'
         }
     })
