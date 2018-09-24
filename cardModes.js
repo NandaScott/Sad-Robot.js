@@ -383,11 +383,14 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
         return `[${card.set.toUpperCase()}: ${card.set_name}](${card.scryfall_uri})`;
     });
 
+    //Set up for batch embeds
     let total = 0;
     let batch = {};
     let currentBatch = 1;
     batch[currentBatch] = [];
 
+    // Creating batch embeds.
+    //We do this because there's a hard limit of 2048 characters in a RichEmbed.
     for (let i=0; i < newList.length; i++) {
 
         total = total + newList[i].length;
