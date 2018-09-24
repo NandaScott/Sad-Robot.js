@@ -55,6 +55,8 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardSetHandler(msg, paramsObject, null, getCard=true);
                 case 'rules':
                     return cardRulesHandler(msg, paramsObject, null, getCard=true);
+                case 'flavor':
+                    return cardFlavorHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -71,6 +73,8 @@ function checkCache(msg, paramsObject, embedType) {
                 return cardSetHandler(msg, paramsObject, reply);
             case 'rules':
                 return cardRulesHandler(msg, paramsObject, reply);
+            case 'flavor':
+                return cardFlavorHandler(msg, paramsObject, reply);
         }
     });
 }
@@ -291,6 +295,36 @@ async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
     params.rulingsList = ('rulingsList' in scryfallCard) ? scryfallCard.rulingsList : cardRulings.data;
 
     embedHelpers.rulesEmbed(msg, seconds, params);
+}
+
+async function cardFlavorHandler(msg, paramsObject, cacheReply, getCard = false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard;
+
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.cardsByName(paramsObject);
+
+        if (scryfallCard.object === 'error') {
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
+            return;
+        }
+
+        cache.setex(`${paramsObject.card} flavor`, 86400, JSON.stringify(scryfallCard));
+
+    } else {
+        scryfallCard = JSON.parse(cacheReply);
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params = handleCardLayout(scryfallCard);
+
+    embedHelpers.flavorEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };

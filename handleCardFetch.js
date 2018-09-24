@@ -54,6 +54,9 @@ function handleCardFetch(msg) {
                     case 'rules':
                         cardModes.checkCache(msg, cardsFound[i], 'rules');
                         break;
+                    case 'flavor':
+                        cardModes.checkCache(msg, cardsFound[i], 'flavor');
+                        break;
                 }
             }, 100);
         }

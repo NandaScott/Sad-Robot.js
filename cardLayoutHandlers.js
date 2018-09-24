@@ -16,7 +16,8 @@ function handleTransform(scryfallObject, returnArray=false) {
                 cost: scryfallObject.card_faces[i].mana_cost,
                 typeLine: scryfallObject.card_faces[i].type_line,
                 oracleText: scryfallObject.card_faces[i].oracle_text,
-                thumbnail: scryfallObject.card_faces[i].image_uris.small
+                thumbnail: scryfallObject.card_faces[i].image_uris.small,
+                flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
             }
 
             array.push(base);
@@ -38,7 +39,8 @@ function handleTransform(scryfallObject, returnArray=false) {
         cost: scryfallObject.card_faces[0].mana_cost,
         typeLine: scryfallObject.card_faces[0].type_line,
         oracleText: scryfallObject.card_faces[0].oracle_text,
-        thumbnail: scryfallObject.card_faces[0].image_uris.small
+        thumbnail: scryfallObject.card_faces[0].image_uris.small,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base;
@@ -63,7 +65,8 @@ function handleFlip(scryfallObject, returnArray=false) {
                 tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
                 legalities: scryfallObject.legalities,
                 typeLine: scryfallObject.card_faces[i].type_line,
-                oracleText: scryfallObject.card_faces[i].oracle_text
+                oracleText: scryfallObject.card_faces[i].oracle_text,
+                flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
             }
 
             array.push(base);
@@ -85,7 +88,8 @@ function handleFlip(scryfallObject, returnArray=false) {
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
         typeLine: scryfallObject.card_faces[i].type_line,
-        oracleText: scryfallObject.card_faces[i].oracle_text
+        oracleText: scryfallObject.card_faces[i].oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base;
@@ -110,7 +114,8 @@ function handleSplit(scryfallObject, returnArray=false) {
                 tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
                 legalities: scryfallObject.legalities,
                 typeLine: scryfallObject.card_faces[i].type_line,
-                oracleText: scryfallObject.card_faces[i].oracle_text
+                oracleText: scryfallObject.card_faces[i].oracle_text,
+                flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
             }
 
             array.push(base);
@@ -132,7 +137,8 @@ function handleSplit(scryfallObject, returnArray=false) {
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
         typeLine: scryfallObject.card_faces[0].type_line,
-        oracleText: scryfallObject.card_faces[0].oracle_text
+        oracleText: scryfallObject.card_faces[0].oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base
@@ -152,7 +158,8 @@ function handleNormal(scryfallObject, returnArray=false) {
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
         typeLine: scryfallObject.type_line,
-        oracleText: scryfallObject.oracle_text
+        oracleText: scryfallObject.oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base;
@@ -172,7 +179,8 @@ function handlePlanar(scryfallObject, returnArray=false) {
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
         typeLine: scryfallObject.type_line,
-        oracleText: scryfallObject.oracle_text
+        oracleText: scryfallObject.oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base;
@@ -192,7 +200,8 @@ function handleScheme(scryfallObject, returnArray=false) {
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
         typeLine: scryfallObject.type_line,
-        oracleText: scryfallObject.oracle_text
+        oracleText: scryfallObject.oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
     return base;
