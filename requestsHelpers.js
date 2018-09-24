@@ -55,4 +55,19 @@ function autocompleteName(paramsObject) {
     });
 }
 
-module.exports = { cardsByName, cardsByNameSet, cardRulesById, autocompleteName };
+function uniquePrints(paramsObject) {
+    return axios.get(`${scryfallBaseUrl}/cards/search`,  {
+        params: {
+            q: `${paramsObject.card}`,
+            unique: 'prints'
+        }
+    })
+    .then((response) => {
+        return response.data;
+    })
+    .catch((error) => {
+        return error.response.data;
+    });
+}
+
+module.exports = { cardsByName, cardsByNameSet, cardRulesById, autocompleteName, uniquePrints };

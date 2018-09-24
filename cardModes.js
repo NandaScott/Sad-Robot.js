@@ -57,6 +57,8 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardRulesHandler(msg, paramsObject, null, getCard=true);
                 case 'flavor':
                     return cardFlavorHandler(msg, paramsObject, null, getCard=true);
+                case 'unique':
+                    return uniquePrintsHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -75,6 +77,8 @@ function checkCache(msg, paramsObject, embedType) {
                 return cardRulesHandler(msg, paramsObject, reply);
             case 'flavor':
                 return cardFlavorHandler(msg, paramsObject, reply);
+            case 'unique':
+                return uniquePrintsHandler(msg, paramsObject, reply);
         }
     });
 }
@@ -325,6 +329,54 @@ async function cardFlavorHandler(msg, paramsObject, cacheReply, getCard = false)
     let params = handleCardLayout(scryfallCard);
 
     embedHelpers.flavorEmbed(msg, seconds, params);
+}
+
+async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let cardList;
+
+    if (getCard) {
+
+        cardList = await requestHelpers.uniquePrints(paramsObject);
+
+        if (cardList.object === 'error') {
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            let errorString = `${cardList.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
+            return;
+        }
+
+        cache.setex(`${paramsObject.card} unique`, 86400, JSON.stringify(cardList));
+
+    } else {
+        cardList = JSON.parse(cacheReply);
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    // let params = handleCardLayout(scryfallCard);
+
+    let newList = cardList.data.map((card) => {
+        return `**[${card.set.toUpperCase()}: ${card.set_name}](${card.scryfall_uri})**`;
+    });
+
+    let total = 0;
+
+    for (let i=0; i < newList.length; i++) {
+        total = total + newList[i].length;
+    }
+
+    console.log(total);
+
+    let params = {
+        url: `https://scryfall.com/search?q=${cardList.data[0].name.replace(' ', '+')}&unique=prints`,
+        cardList: newList,
+        name: cardList.data[0].name
+    }
+
+    embedHelpers.uniquePrintsEmbed(msg, seconds, params);
 }
 
 module.exports = { checkCache };

@@ -190,11 +190,25 @@ function flavorEmbed(msg, seconds, object) {
     msg.channel.send({ embed });
 }
 
+function uniquePrintsEmbed(msg, seconds, object) {
+
+    let embed = new Discord.RichEmbed()
+        .setURL(object.url)
+        .setTitle(`**${object.name}**`)
+        .setThumbnail(object.thumbnail)
+        .setColor(blue)
+        .setFooter(`Fetch took: ${seconds} seconds.`)
+        .setDescription(object.cardList.join('\n'));
+
+    msg.channel.send({ embed });
+}
+
 module.exports = {
     imageEmbed,
     oracleEmbed,
     priceEmbed,
     legalEmbed,
     rulesEmbed,
-    flavorEmbed
+    flavorEmbed,
+    uniquePrintsEmbed
 };

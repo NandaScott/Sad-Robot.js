@@ -57,6 +57,8 @@ function handleCardFetch(msg) {
                     case 'flavor':
                         cardModes.checkCache(msg, cardsFound[i], 'flavor');
                         break;
+                    case 'unique':
+                        cardModes.checkCache(msg, cardsFound[i], 'unique')
                 }
             }, 100);
         }
