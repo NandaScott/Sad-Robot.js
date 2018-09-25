@@ -341,7 +341,7 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
         'forest'
     ]
 
-    if (forbiddenCards.indexOf(paramsObject.card)) {
+    if (forbiddenCards.indexOf(paramsObject.card) > -1) {
         msg.channel.send(
             'You may not search that card with the `unique` mode.\nHere\'s a link you can use:\n' + 
             `https://scryfall.com/search?q=!"${paramsObject.card.replace(' ', '+')}"&unique=prints`
