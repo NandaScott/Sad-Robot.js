@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const handleCardFetch = require('./handleCardFetch');
 const helpText = require('./helpText');
 const adminUtils = require('./adminUtils');
+const bannedUsers = require('./bannedUsers.json');
 
 const client = new Discord.Client();
 
@@ -14,6 +15,11 @@ client.on('ready', () => {
 client.on('message', async (msg) => {
     // Ignore ourself and other bots
     if (msg.author.bot) return;
+
+    // Ignore banned users
+    if (adminUtils.search(msg.author.id, bannedUsers.users)) {
+        return;
+    }
 
     const args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();

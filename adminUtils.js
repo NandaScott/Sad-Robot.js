@@ -22,15 +22,18 @@ function getFeedback(msg, args) {
         .then((user) => {
             user.send({ embed })
                 .then((message) => {
-                    message.react('🚷');
-                    const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-                    message.awaitReactions(filter, { time: 15000 })
-                        .then((collected) => {
-                            if (collected.size > 0) {
-                                banUser(msg);
-                            }
-                        })
-                        .catch((error) => {console.log(error)});
+                    message.react('🚷')
+                        .then((sentReaction) => {
+                            const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
+                            message.awaitReactions(filter, { time: 5000 })
+                                .then((collected) => {
+                                    if (collected.size > 0) {
+                                        banUser(msg);
+                                        sentReaction.remove(message.author.id);
+                                    }
+                                })
+                                .catch((error) => {console.log(error)});
+                        });
                 })
                 .catch((err) => {
                     console.log(err);
@@ -80,7 +83,14 @@ function banUser(msg) {
                 });
         });
     });
-
 }
 
-module.exports = { getFeedback };
+function search(key, array) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].id === key) {
+            return true;
+        }
+    }
+}
+
+module.exports = { getFeedback, search };
