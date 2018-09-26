@@ -1,4 +1,5 @@
 node_modules/
 credentials.json
+bannedUsers.json
 rdb.dump
 example_card_objects
