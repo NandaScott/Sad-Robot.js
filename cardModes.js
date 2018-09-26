@@ -118,7 +118,12 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let params;
 
-    if (scryfallCard.layout === 'transform') {
+    let doubleFaceLayouts = [
+        'transform',
+        'double_faced_token'
+    ]
+
+    if (doubleFaceLayouts.indexOf(scryfallCard.layout) > -1) {
         params = handleCardLayout(scryfallCard, returnArray=true);
 
         for (let i = 0; i < params.length; i++) {
