@@ -20,7 +20,15 @@ const cardLayoutMapping = {
     normal: cardLayoutHandlers.handleNormal,
     planar: cardLayoutHandlers.handlePlanar,
     scheme: cardLayoutHandlers.handleScheme,
-    emblem: cardLayoutHandlers.handleEmblem
+    emblem: cardLayoutHandlers.handleEmblem,
+    leveler: cardLayoutHandlers.handleLeveler,
+    saga: cardLayoutHandlers.handleSaga,
+    vanguard: cardLayoutHandlers.handleVanguard,
+    meld: cardLayoutHandlers.handleMeld,
+    token: cardLayoutHandlers.handleToken,
+    host: cardLayoutHandlers.handleHost,
+    augment: cardLayoutHandlers.handleAugment,
+    double_faced_token: cardLayoutHandlers.handleDoubleFacedToken
 };
 
 function handleCardLayout(scryfallObject, returnArray) {
