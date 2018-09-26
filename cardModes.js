@@ -19,7 +19,8 @@ const cardLayoutMapping = {
     split: cardLayoutHandlers.handleSplit,
     normal: cardLayoutHandlers.handleNormal,
     planar: cardLayoutHandlers.handlePlanar,
-    scheme: cardLayoutHandlers.handleScheme
+    scheme: cardLayoutHandlers.handleScheme,
+    emblem: cardLayoutHandlers.handleEmblem
 };
 
 function handleCardLayout(scryfallObject, returnArray) {

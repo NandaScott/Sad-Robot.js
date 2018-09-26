@@ -207,11 +207,33 @@ function handleScheme(scryfallObject, returnArray=false) {
     return base;
 }
 
+function handleEmblem(scryfallObject, returnArray=false) {
+    let base = {
+        name: scryfallObject.name,
+        image: scryfallObject.image_uris.border_crop,
+        thumbnail: scryfallObject.image_uris.small,
+        url: scryfallObject.scryfall_uri,
+        power: ('power' in scryfallObject) ? scryfallObject.power : '',
+        toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
+        cost: ('mana_cost' in scryfallObject) ? scryfallObject.mana_cost : '',
+        usd: ('usd' in scryfallObject) ? scryfallObject.usd : 'N/A',
+        eur: ('eur' in scryfallObject) ? scryfallObject.eur : 'N/A',
+        tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
+        legalities: scryfallObject.legalities,
+        typeLine: scryfallObject.type_line,
+        oracleText: scryfallObject.oracle_text,
+        flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
+    }
+
+    return base;
+}
+
 module.exports = {
     handleTransform,
     handleFlip,
     handleSplit,
     handleNormal,
     handlePlanar,
-    handleScheme
+    handleScheme,
+    handleEmblem
 };
