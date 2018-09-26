@@ -1,8 +1,9 @@
-let creds = require('./credentials.json');
+let config = require('./config.json');
 const Discord = require('discord.js');
 
 const handleCardFetch = require('./handleCardFetch');
 const helpText = require('./helpText');
+const adminUtils = require('./adminUtils');
 
 const client = new Discord.Client();
 
@@ -10,9 +11,24 @@ client.on('ready', () => {
     console.log('Logged in!');
 });
 
-client.on('message', (msg) => {
-    if (msg.author.id === client.user.id) {
-        return
+client.on('message', async (msg) => {
+    // Ignore ourself and other bots
+    if (msg.author.bot) return;
+
+    const args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    switch (command) {
+        case 'feedback':
+            adminUtils.getFeedback(msg, args);
+            break;
+        case 'help':
+            msg.channel.send(helpText.helpText);
+            break;
+        case 'ping':
+            const m = await msg.channel.send('Ping?');
+            m.edit(`Pong! Latency is ${m.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
+            break;
     }
 
     switch (msg.content.toLowerCase()) {
@@ -22,10 +38,7 @@ client.on('message', (msg) => {
         case 'good bot':
             msg.reply('Thank you!');
             break;
-        case '!help':
-            msg.channel.send(helpText.helpText);
-            break;
     }
 });
 
-client.login(creds['token'])
+client.login(config.token)

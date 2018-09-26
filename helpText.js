@@ -15,6 +15,13 @@ Here is a list of patterns I look for:
 [[cardname | flavor]] ... Fetch a card's flavor text
 [[cardname | unique]] ... Fetch a linked list of all printings for a card
 [[🎲]] .................. Fetch a random card
+
+Other commands:
+help .................... Shows this help text
+ping .................... Tests the bot's connection to discord
+feedback ................ Sends the maintainer of Sad Robot a DM with your issue.
+                          Note that abuse/spam of this command will lead to an
+                          account ban for this bot.
 \`\`\`
 `;
 
