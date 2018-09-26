@@ -18,6 +18,7 @@ function getFeedback(msg, args) {
         ${args.join(' ')}`);
     let client = msg.channel.client;
 
+    // This needs to be refactored later.
     client.fetchUser(config.myId)
         .then((user) => {
             user.send({ embed })
