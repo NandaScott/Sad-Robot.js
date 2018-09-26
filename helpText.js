@@ -14,6 +14,7 @@ Here is a list of patterns I look for:
 [[cardname | rules]] .... Fetch a card's rulings
 [[cardname | flavor]] ... Fetch a card's flavor text
 [[cardname | unique]] ... Fetch a linked list of all printings for a card
+[[🎲]] .................. Fetch a random card
 \`\`\`
 `;
 

@@ -70,4 +70,21 @@ function uniquePrints(paramsObject) {
     });
 }
 
-module.exports = { cardsByName, cardsByNameSet, cardRulesById, autocompleteName, uniquePrints };
+function randomCard() {
+    return axios.get(`${scryfallBaseUrl}/cards/random`)
+    .then((response) => {
+        return response.data;
+    })
+    .catch((error) => {
+        return error.response.data;
+    });
+}
+
+module.exports = {
+    cardsByName,
+    cardsByNameSet,
+    cardRulesById,
+    autocompleteName,
+    uniquePrints,
+    randomCard
+};

@@ -3,12 +3,20 @@ const cardModes = require('./cardModes');
 function handleCardFetch(msg) {
 
     let cardsFound = msg.content
-        .match(/(\[\[[\w\s\'\.\,|/:]+\]\])+/g);
+        .match(/(\[\[[\w\s\'\.\,|/:🎲]+\]\])+/g);
 
     if (cardsFound) {
 
         cardsFound = cardsFound.map((card) => {
-            let parts = card.match(/[\w\s\,\'\.:/]+/g);
+            let parts = card.match(/[\w\s\,\'\.:/🎲]+/g);
+
+            if (parts[0] === '🎲') {
+                return {
+                    card: '',
+                    mode: 'random',
+                    setCode: ''
+                }
+            }
 
             if (parts.length < 2) {
                 return {
@@ -58,7 +66,11 @@ function handleCardFetch(msg) {
                         cardModes.checkCache(msg, cardsFound[i], 'flavor');
                         break;
                     case 'unique':
-                        cardModes.checkCache(msg, cardsFound[i], 'unique')
+                        cardModes.checkCache(msg, cardsFound[i], 'unique');
+                        break;
+                    case 'random':
+                        cardModes.checkCache(msg, cardsFound[i], 'random');
+                        break;
                 }
             }, 100);
         }

@@ -68,6 +68,8 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardFlavorHandler(msg, paramsObject, null, getCard=true);
                 case 'unique':
                     return uniquePrintsHandler(msg, paramsObject, null, getCard=true);
+                case 'random':
+                    return randomCardHandler(msg, paramsObject, null, getCard=true);
             }
         }
 
@@ -428,6 +430,52 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
 
         embedHelpers.uniquePrintsEmbed(msg, seconds, params);
     }
+}
+
+async function randomCardHandler(msg, paramsObject, cacheReply, getCard=false) {
+
+    let startTimer = new Date().getTime();
+    let scryfallCard;
+    
+    if (getCard) {
+
+        scryfallCard = await requestHelpers.randomCard();
+
+        if (scryfallCard.object === 'error') {
+            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+
+            msg.channel.send(cardList.details);
+
+            let errorString = `\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+            msg.channel.send(errorString);
+            return;
+        }
+    } else {
+        scryfallCard = JSON.parse(cacheReply);
+    }
+
+    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+
+    let params;
+
+    let doubleFaceLayouts = [
+        'transform',
+        'double_faced_token'
+    ]
+
+    if (doubleFaceLayouts.indexOf(scryfallCard.layout) > -1) {
+        params = handleCardLayout(scryfallCard, returnArray=true);
+
+        for (let i = 0; i < params.length; i++) {
+            embedHelpers.imageEmbed(msg, seconds, params[i]);
+        }
+        return;
+    } else {
+        params = handleCardLayout(scryfallCard, returnArray=false);
+    }
+
+    embedHelpers.imageEmbed(msg, seconds, params);
+
 }
 
 module.exports = { checkCache };
