@@ -3,6 +3,16 @@ const fs = require('fs');
 
 let config = require('./config.json');
 
+/*
+This function handles everything for the feedback command.
+First it sends a DM to specifically me, with an embed of everything
+needed. After it will mark that embed with a reaction and wait for an hour.
+After that hour, if I have also added that reaction it will ban that user
+and write out the id and name of that user to a file. That file is checked before
+every single command is tracked, and if they are in that file they get ignored.
+Since this uses the user id, this is permanent across discord.
+The bot will then remove the reaction, to prevent accidental bannings.
+*/
 function getFeedback(msg, args) {
     let guild = (msg.channel.type === 'dm') ? 'DM' : msg.guild.name;
 
@@ -26,7 +36,7 @@ function getFeedback(msg, args) {
                     message.react('🚷')
                         .then((sentReaction) => {
                             const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-                            message.awaitReactions(filter, { time: 5000 })
+                            message.awaitReactions(filter, { time: 1000 * 60 * 60 })
                                 .then((collected) => {
                                     if (collected.size > 0) {
                                         banUser(msg);
