@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 
+let config = require('./config.json');
+
 function getFeedback(msg, args) {
     let guild = (msg.channel.type === 'dm') ? 'DM' : msg.guild.name;
 
@@ -16,12 +18,12 @@ function getFeedback(msg, args) {
         ${args.join(' ')}`);
     let client = msg.channel.client;
 
-    client.fetchUser('129819240654962688')
+    client.fetchUser(config.myId)
         .then((user) => {
             user.send({ embed })
                 .then((message) => {
                     message.react('🚷');
-                    const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === '129819240654962688';
+                    const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
                     message.awaitReactions(filter, { time: 15000 })
                         .then((collected) => {
                             if (collected.size > 0) {
@@ -43,7 +45,7 @@ function banUser(msg) {
         let client = msg.channel.client;
 
         if (err) {
-            client.fetchUser('129819240654962688')
+            client.fetchUser(config.myId)
                 .then((user) => {
                     user.send(`Failed to ban user ${msg.author.username}\n${err}`);
                 })
@@ -60,7 +62,7 @@ function banUser(msg) {
     
         fs.writeFile('./bannedUsers.json', newUsers, (err) => {
             if (err) {
-                client.fetchUser('129819240654962688')
+                client.fetchUser(config.myId)
                     .then((user) => {
                         user.send(`Failed to write user to file\n${err}`);
                     })
@@ -69,7 +71,7 @@ function banUser(msg) {
                     });
             }
     
-            client.fetchUser('129819240654962688')
+            client.fetchUser(config.myId)
                 .then((user) => {
                     user.send(`Successfully banned user ${msg.author.username}`);
                 })
