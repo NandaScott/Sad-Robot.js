@@ -111,7 +111,7 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
             return;
         }
 
-        cache.setex(`${paramsObject.card} image`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} image`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -159,7 +159,7 @@ async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
             return;
         }
 
-        cache.setex(`${paramsObject.card} oracle`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} oracle`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -189,7 +189,7 @@ async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
             return;
         }
 
-        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} price`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -217,7 +217,7 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
             msg.channel.send(errorString);
             return;
         }
-        cache.setex(`${paramsObject.card} price`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} price`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -246,7 +246,7 @@ async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
             return;
         }
 
-        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
     } else {
         scryfallCard = JSON.parse(cacheReply);
     }
@@ -302,7 +302,7 @@ async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
 
         let combine = Object.assign(scryfallCard, cardRulings);
 
-        cache.setex(`${paramsObject.card} rules`, 86400, JSON.stringify(combine));
+        cache.setex(`${paramsObject.card} rules`, 1000 * 60 * 60, JSON.stringify(combine));
 
     } else {
         scryfallCard = JSON.parse(cacheReply);
@@ -334,7 +334,7 @@ async function cardFlavorHandler(msg, paramsObject, cacheReply, getCard = false)
             return;
         }
 
-        cache.setex(`${paramsObject.card} flavor`, 86400, JSON.stringify(scryfallCard));
+        cache.setex(`${paramsObject.card} flavor`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
 
     } else {
         scryfallCard = JSON.parse(cacheReply);
@@ -387,7 +387,7 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
             return;
         }
 
-        cache.setex(`${paramsObject.card} unique`, 86400, JSON.stringify(cardList));
+        cache.setex(`${paramsObject.card} unique`, 1000 * 60 * 60, JSON.stringify(cardList));
 
     } else {
         cardList = JSON.parse(cacheReply);
