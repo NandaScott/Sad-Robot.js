@@ -6,8 +6,6 @@
 function generateBase(scryfallObject) {
     let base = {
         name: ('name' in scryfallObject) ? scryfallObject.name : '',
-        image: ('border_crop' in scryfallObject) ? scryfallObject.image_uris.border_crop : '',
-        thumbnail: ('small' in scryfallObject) ? scryfallObject.image_uris.small : '',
         url: ('scryfall_uri' in scryfallObject) ? scryfallObject.scryfall_uri : '',
         power: ('power' in scryfallObject) ? scryfallObject.power : '',
         toughness: ('toughness' in scryfallObject) ? scryfallObject.toughness : '',
@@ -19,6 +17,14 @@ function generateBase(scryfallObject) {
         typeLine: ('type_line' in scryfallObject) ? scryfallObject.type_line : '',
         oracleText: ('oracle_text' in scryfallObject) ? scryfallObject.oracle_text : '',
         flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
+    }
+
+    if ('image_uris' in scryfallObject) {
+        base.image = ('border_crop' in scryfallObject.image_uris) ? scryfallObject.image_uris.border_crop : '';
+        base.thumbnail = ('small' in scryfallObject.image_uris) ? scryfallObject.image_uris.small : '';
+    } else {
+        base.image = '';
+        base.thumbnail = '';
     }
 
     return base;
@@ -51,8 +57,8 @@ function handleDoubleFaceCard(scryfallObject, returnArray=false) {
 
     base.name = scryfallObject.card_faces[0].name,
     base.image = scryfallObject.card_faces[0].image_uris.border_crop,
-    base.power = ('power' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[i].power : '',
-    base.toughness = ('toughness' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[i].toughness : '',
+    base.power = ('power' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[0].power : '',
+    base.toughness = ('toughness' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[0].toughness : '',
     base.cost = scryfallObject.card_faces[0].mana_cost,
     base.typeLine = scryfallObject.card_faces[0].type_line,
     base.oracleText = scryfallObject.card_faces[0].oracle_text,
@@ -96,19 +102,19 @@ function handleFlip(scryfallObject, returnArray=false) {
     }
 
     let base = {
-        name: scryfallObject.card_faces[i].name,
+        name: scryfallObject.card_faces[0].name,
         image: scryfallObject.image_uris.border_crop,
         thumbnail: scryfallObject.image_uris.small,
         url: scryfallObject.scryfall_uri,
-        power: ('power' in scryfallObject.card_faces[i]) ? scryfallObject.card_faces[i].power : '',
-        toughness: ('toughness' in scryfallObject.card_faces[i]) ? scryfallObject.card_faces[i].toughness : '',
-        cost: ('mana_cost' in scryfallObject.card_faces[i]) ? scryfallObject.card_faces[i].mana_cost : '',
+        power: ('power' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[0].power : '',
+        toughness: ('toughness' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[0].toughness : '',
+        cost: ('mana_cost' in scryfallObject.card_faces[0]) ? scryfallObject.card_faces[0].mana_cost : '',
         usd: ('usd' in scryfallObject) ? scryfallObject.usd : 'N/A',
         eur: ('eur' in scryfallObject) ? scryfallObject.eur : 'N/A',
         tix: ('tix' in scryfallObject) ? scryfallObject.tix : 'N/A',
         legalities: scryfallObject.legalities,
-        typeLine: scryfallObject.card_faces[i].type_line,
-        oracleText: scryfallObject.card_faces[i].oracle_text,
+        typeLine: scryfallObject.card_faces[0].type_line,
+        oracleText: scryfallObject.card_faces[0].oracle_text,
         flavorText: ('flavor_text' in scryfallObject) ? scryfallObject.flavor_text : 'N/A'
     }
 
