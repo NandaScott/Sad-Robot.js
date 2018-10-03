@@ -8,9 +8,11 @@ function handleCardFetch(msg) {
     if (cardsFound) {
 
         cardsFound = cardsFound.map((card) => {
-            let parts = card.match(/[\w\s\,\'\.:/🎲]+/g);
+            let cardName = card.match(/([\w\s🎲]+)/g)[0];
+            let mode = card.match(/([|]oracle|price|legal|rules|flavor)/g);
+            let setCode = card.match(/([\w]+:[A-Za-z\d]+)/g)[0].split(':').pop().trim();
 
-            if (parts[0] === '🎲') {
+            if (cardName === '🎲') {
                 return {
                     card: '',
                     mode: 'random',
@@ -18,27 +20,19 @@ function handleCardFetch(msg) {
                 }
             }
 
-            if (parts.length < 2) {
-                return {
-                    card: parts[0].trim(),
-                    mode: '',
-                    setCode: ''
-                }
+            if (mode) {
+                mode = mode[0].replace('|', '').trim();
+            } else {
+                mode = '';
             }
 
-            if (parts[1].includes('set:')) {
-                return {
-                    card: parts[0].trim(),
-                    mode: 'set',
-                    setCode: parts[1].split(':').pop().trim()
-                }
+            let final = {
+                card: cardName,
+                mode: mode,
+                setCode: setCode
             }
 
-            return {
-                card: parts[0].trim(),
-                mode: parts[1].trim(),
-                setCode: ''
-            };
+            return final;
         });
 
         for (let i = 0; i < cardsFound.length; i++) {
@@ -52,9 +46,6 @@ function handleCardFetch(msg) {
                         break;
                     case 'price':
                         cardModes.checkCache(msg, cardsFound[i], 'price');
-                        break;
-                    case 'set':
-                        cardModes.checkCache(msg, cardsFound[i], 'set');
                         break;
                     case 'legal':
                         cardModes.checkCache(msg, cardsFound[i], 'legal');

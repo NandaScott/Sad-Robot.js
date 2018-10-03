@@ -60,8 +60,6 @@ function checkCache(msg, paramsObject, embedType) {
                     return cardPriceHandler(msg, paramsObject, null, getCard=true);
                 case 'legal':
                     return cardLegalHandler(msg, paramsObject, null, getCard=true);
-                case 'set':
-                    return cardSetHandler(msg, paramsObject, null, getCard=true);
                 case 'rules':
                     return cardRulesHandler(msg, paramsObject, null, getCard=true);
                 case 'flavor':
@@ -82,8 +80,6 @@ function checkCache(msg, paramsObject, embedType) {
                 return cardPriceHandler(msg, paramsObject, reply);
             case 'legal':
                 return cardPriceHandler(msg, paramsObject, reply);
-            case 'set':
-                return cardSetHandler(msg, paramsObject, reply);
             case 'rules':
                 return cardRulesHandler(msg, paramsObject, reply);
             case 'flavor':
@@ -229,46 +225,6 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
     embedHelpers.legalEmbed(msg, seconds, params);
 }
 
-async function cardSetHandler(msg, paramsObject, cacheReply, getCard=false) {
-
-    let startTimer = new Date().getTime();
-    let scryfallCard;
-    
-    if (getCard) {
-
-        scryfallCard = await requestHelpers.cardsByNameSet(paramsObject);
-
-        if (scryfallCard.object === 'error') {
-            let autocomplete = await requestHelpers.autocompleteName(paramsObject);
-
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
-            return;
-        }
-
-        cache.setex(`${paramsObject.card} set${paramsObject.setCode}`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
-    } else {
-        scryfallCard = JSON.parse(cacheReply);
-    }
-
-    let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
-
-    let params;
-
-    if (scryfallCard.layout === 'transform') {
-        params = handleCardLayout(scryfallCard, returnArray=true);
-
-        for (let i = 0; i < params.length; i++) {
-            embedHelpers.imageEmbed(msg, seconds, params[i]);
-        }
-        return;
-    } else {
-        params = handleCardLayout(scryfallCard, returnArray=true);
-    }
-
-
-    embedHelpers.imageEmbed(msg, seconds, params);
-}
 
 async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
 

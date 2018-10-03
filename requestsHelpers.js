@@ -5,7 +5,8 @@ const scryfallBaseUrl = 'https://api.scryfall.com';
 function cardsByName(paramsObject) {
     return axios.get(`${scryfallBaseUrl}/cards/named`, {
         params: {
-            fuzzy: paramsObject.card
+            fuzzy: paramsObject.card,
+            set: paramsObject.setCode
         }
     })
     .then((response) => {
