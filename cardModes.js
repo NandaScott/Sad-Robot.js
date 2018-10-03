@@ -225,7 +225,6 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
     embedHelpers.legalEmbed(msg, seconds, params);
 }
 
-
 async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
