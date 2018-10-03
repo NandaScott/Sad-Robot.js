@@ -29,28 +29,51 @@ function getFeedback(msg, args) {
     let client = msg.channel.client;
 
     // This needs to be refactored later.
+    // client.fetchUser(config.myId)
+    //     .then((user) => {
+    //         user.send({ embed })
+    //             .then((message) => {
+    //                 message.react('🚷')
+    //                     .then((sentReaction) => {
+    //                         const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
+    //                         message.awaitReactions(filter, { time: 1000 * 60 * 60 })
+    //                             .then((collected) => {
+    //                                 if (collected.size > 0) {
+    //                                     banUser(msg);
+    //                                     sentReaction.remove(message.author.id);
+    //                                 }
+    //                             })
+    //                             .catch((error) => {console.log(error)});
+    //                     });
+    //             })
+    //             .catch((err) => {
+    //                 console.log(err);
+    //             });
+
+    //         msg.channel.send('Feedback sent.');
+    //     })
+
     client.fetchUser(config.myId)
         .then((user) => {
-            user.send({ embed })
-                .then((message) => {
-                    message.react('🚷')
-                        .then((sentReaction) => {
-                            const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-                            message.awaitReactions(filter, { time: 1000 * 60 * 60 })
-                                .then((collected) => {
-                                    if (collected.size > 0) {
-                                        banUser(msg);
-                                        sentReaction.remove(message.author.id);
-                                    }
-                                })
-                                .catch((error) => {console.log(error)});
-                        });
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-
             msg.channel.send('Feedback sent.');
+
+            return user.send({ embed });
+        })
+        .then((message) => {
+            return message.react('🚷');
+        })
+        .then((sentReaction) => {
+            const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
+            return sentReaction.message.awaitReactions(filter, { time: 1000 * 10 });
+        })
+        .then((collected) => {
+            if (collected.size > 0) {
+                banUser(msg);
+                sentReaction.remove(message.author.id);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
         })
 }
 
