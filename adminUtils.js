@@ -28,31 +28,6 @@ function getFeedback(msg, args) {
         ${args.join(' ')}`);
     let client = msg.channel.client;
 
-    // This needs to be refactored later.
-    // client.fetchUser(config.myId)
-    //     .then((user) => {
-    //         user.send({ embed })
-    //             .then((message) => {
-    //                 message.react('🚷')
-    //                     .then((sentReaction) => {
-    //                         const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-    //                         message.awaitReactions(filter, { time: 1000 * 60 * 60 })
-    //                             .then((collected) => {
-    //                                 if (collected.size > 0) {
-    //                                     banUser(msg);
-    //                                     sentReaction.remove(message.author.id);
-    //                                 }
-    //                             })
-    //                             .catch((error) => {console.log(error)});
-    //                     });
-    //             })
-    //             .catch((err) => {
-    //                 console.log(err);
-    //             });
-
-    //         msg.channel.send('Feedback sent.');
-    //     })
-
     client.fetchUser(config.myId)
         .then((user) => {
             msg.channel.send('Feedback sent.');
@@ -64,16 +39,15 @@ function getFeedback(msg, args) {
         })
         .then((sentReaction) => {
             const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-            return sentReaction.message.awaitReactions(filter, { time: 1000 * 10 });
+            return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 * 60 });
         })
         .then((collected) => {
             if (collected.size > 0) {
                 banUser(msg);
-                sentReaction.remove(message.author.id);
             }
         })
         .catch((err) => {
-            console.log(err);
+            console.error(err);
         })
 }
 
@@ -93,7 +67,11 @@ function banUser(msg) {
 
         let bannedUsersFile = JSON.parse(data);
 
-        bannedUsersFile.users.push({ id: msg.author.id, username: msg.author.username });
+        bannedUsersFile.users.push({
+            id: msg.author.id,
+            username: msg.author.username,
+            bannedAt: Date()
+        });
     
         let newUsers = JSON.stringify(bannedUsersFile, null, 4);
     
