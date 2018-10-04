@@ -3,3 +3,4 @@ config.json
 bannedUsers.json
 rdb.dump
 example_card_objects
+*_test.js
