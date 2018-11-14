@@ -29,7 +29,13 @@ client.on('message', async (msg) => {
             adminUtils.getFeedback(msg, args);
             break;
         case 'help':
-            msg.channel.send(helpText.helpText);
+            client.fetchUser(msg.author.id)
+                .then((user) => {
+                    user.send(helpText.helpText);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
             break;
         case 'ping':
             const m = await msg.channel.send('Ping?');
@@ -45,6 +51,18 @@ client.on('message', async (msg) => {
             msg.reply('Thank you!');
             break;
     }
+});
+
+client.on('guildMemberAdd', (member) => {
+    const memberId = member.id;
+
+    client.fetchUser(memberId)
+        .then((user) => {
+            user.send(helpText.greeting(member.guild.name));
+        })
+        .catch((err) => {
+            console.error(err);
+        })
 });
 
 client.login(config.token)
