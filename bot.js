@@ -5,11 +5,13 @@ const handleCardFetch = require('./handleCardFetch');
 const helpText = require('./helpText');
 const adminUtils = require('./adminUtils');
 const bannedUsers = require('./bannedUsers.json');
+const prefix = require('./handlePrefixes');
 
 const client = new Discord.Client();
 
 client.on('ready', () => {
     console.log('Logged in!');
+    prefix.setDefaultPrefix();
 });
 
 client.on('message', async (msg) => {
@@ -20,6 +22,8 @@ client.on('message', async (msg) => {
     if (adminUtils.search(msg.author.id, bannedUsers.users)) {
         return;
     }
+
+    prefix.checkPrefix(msg);
 
     const args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
@@ -40,6 +44,9 @@ client.on('message', async (msg) => {
         case 'ping':
             const m = await msg.channel.send('Ping?');
             m.edit(`Pong! Latency is ${m.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
+            break;
+        case 'prefix':
+            prefix.main(msg, args);
             break;
     }
 
