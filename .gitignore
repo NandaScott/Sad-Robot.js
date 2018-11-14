@@ -1,6 +1,6 @@
 node_modules/
 config.json
 bannedUsers.json
-rdb.dump
+dump.rdb
 example_card_objects
 *_test.js
