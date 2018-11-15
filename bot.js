@@ -23,10 +23,10 @@ client.on('message', async (msg) => {
         return;
     }
 
-    prefix.checkPrefix(msg);
+    let serverPrefix = await prefix.checkPrefix(msg)
 
-    const args = msg.content.slice(config.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
+    const args = msg.content.split(' ').slice(1);
+    const command = msg.content.split(' ')[0].replace(serverPrefix, '');
 
     switch (command) {
         case 'feedback':

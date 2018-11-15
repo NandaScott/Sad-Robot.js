@@ -1,6 +1,7 @@
 const redis = require('redis');
+const asyncRedis = require('async-redis');
 const cache = redis.createClient(6379, '127.0.0.1');
-const util = require('util');
+const asyncCache = asyncRedis.createClient(6379, '127.0.0.1');
 
 function setServerPrefix(msg, args) {
     cache.set(msg.channel.guild.id, args[0], (err, reply) => {
@@ -52,8 +53,14 @@ function setDefaultPrefix() {
     });
 }
 
-async function checkPrefix(msg) {
-    cache.get(msg.channel.guild.id);
+const checkPrefix = async (msg) => {
+    let reply = await asyncCache.get(msg.channel.guild.id);
+
+    if (reply === null) {
+        return await asyncCache.get('defaultPrefix');
+    }
+
+    return reply;
 }
 
 module.exports = { main, setDefaultPrefix, checkPrefix };
