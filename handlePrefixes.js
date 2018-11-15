@@ -56,6 +56,10 @@ function setDefaultPrefix() {
 }
 
 const checkPrefix = async (msg) => {
+    if (msg.channel.type == 'dm') {
+        return await asyncCache.get('defaultPrefix');
+    }
+
     let reply = await asyncCache.get(msg.channel.guild.id);
 
     if (reply === null) {
