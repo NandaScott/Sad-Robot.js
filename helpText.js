@@ -1,4 +1,4 @@
-const helpText = `
+const helpText = (prefix) => `
 \`\`\`
 
 To ping a card, use the pattern [[cardname]].
@@ -21,9 +21,11 @@ the following syntax with any other mode
 [[cardname | set:KTK | price]]
 
 Other commands:
-?help .................... Shows this help text
-?ping .................... Tests the bot's connection to discord
-?feedback <msg> .......... Sends the maintainer of Sad Robot a DM with your issue.
+${prefix}help .................... Shows this help text
+${prefix}ping .................... Tests the bot's connection to discord
+${prefix}prefix .................. Used for setting this server's command prefix. Admins only.
+resetprefix ..... Resets this server's command prefix to default. Admins only.
+${prefix}feedback <msg> .......... Sends the maintainer of Sad Robot a DM with your issue.
                           Note that abuse/spam of this command will lead to an
                           account ban for this bot.
 \`\`\`

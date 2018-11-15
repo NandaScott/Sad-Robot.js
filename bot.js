@@ -35,7 +35,7 @@ client.on('message', async (msg) => {
         case 'help':
             client.fetchUser(msg.author.id)
                 .then((user) => {
-                    user.send(helpText.helpText);
+                    user.send(helpText.helpText(serverPrefix));
                 })
                 .catch((err) => {
                     console.error(err);
