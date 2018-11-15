@@ -57,6 +57,9 @@ client.on('message', async (msg) => {
         case 'good bot':
             msg.reply('Thank you!');
             break;
+        case 'resetprefix':
+            prefix.resetPrefix(msg);
+            break;
     }
 });
 

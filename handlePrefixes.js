@@ -30,14 +30,16 @@ function getServerPrefix(msg) {
 }
 
 function main(msg, args) {
-    if (args.length > 1) {
-        msg.channel.send('Please only provide the prefix.')
-    }
-    else if (args.length == 0) {
-        getServerPrefix(msg);
-    }
-    else if (args.length == 1) {
-        setServerPrefix(msg, args);
+    if (checkPrivelege(msg)) {
+        if (args.length > 1) {
+            msg.channel.send('Please only provide the prefix.')
+        }
+        else if (args.length == 0) {
+            getServerPrefix(msg);
+        }
+        else if (args.length == 1) {
+            setServerPrefix(msg, args);
+        }
     }
 }
 
@@ -63,4 +65,23 @@ const checkPrefix = async (msg) => {
     return reply;
 }
 
-module.exports = { main, setDefaultPrefix, checkPrefix };
+function resetPrefix(msg) {
+    if (checkPrivelege(msg)) {
+        cache.del(msg.channel.guild.id, (err, reply) => {
+            if (err) console.log(err);
+
+            msg.channel.send(`Prefix has been reset to default.`);
+        });
+    }
+}
+
+function checkPrivelege(msg) {
+    if (!msg.member.roles.some(r => ['Administrator', 'Moderator'].includes(r.name))) {
+        msg.channel.send('Sorry, you don\'t have permissions to use this.');
+        return false;
+    }
+
+    return true;
+}
+
+module.exports = { main, setDefaultPrefix, checkPrefix, resetPrefix };
