@@ -1,10 +1,11 @@
 let config = require('./config.json');
 const Discord = require('discord.js');
+const redis = require('redis');
+const cache = redis.createClient(6379, '127.0.0.1');
 
 const handleCardFetch = require('./handleCardFetch');
 const helpText = require('./helpText');
 const adminUtils = require('./adminUtils');
-const bannedUsers = require('./bannedUsers.json');
 const prefix = require('./handlePrefixes');
 
 const client = new Discord.Client();

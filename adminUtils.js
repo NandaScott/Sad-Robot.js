@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
-const fs = require('fs');
+const redis = require('redis');
+const cache = redis.createClient(6379, '127.0.0.1');
 
 let config = require('./config.json');
 
@@ -51,8 +52,8 @@ function getFeedback(msg, args) {
         })
 }
 
-function banUser(msg) {
-    fs.readFile('bannedUsers.json', (err, data) => {
+function banUser(msg, redis_client) {
+    cache.get('bannedUsers', (err, reply) => {
         let client = msg.channel.client;
 
         if (err) {
@@ -65,17 +66,17 @@ function banUser(msg) {
                 });
         }
 
-        let bannedUsersFile = JSON.parse(data);
+        let bannedUsers = JSON.parse(reply);
 
-        bannedUsersFile.users.push({
+        bannedUsers.user.push({
             id: msg.author.id,
             username: msg.author.username,
             bannedAt: Date()
         });
-    
-        let newUsers = JSON.stringify(bannedUsersFile, null, 4);
-    
-        fs.writeFile('./bannedUsers.json', newUsers, (err) => {
+
+        let newUsers = JSON.stringify(bannedUsers);
+
+        cache.set('bannedUsers', newUsers, (err, reply) => {
             if (err) {
                 client.fetchUser(config.myId)
                     .then((user) => {
@@ -93,7 +94,7 @@ function banUser(msg) {
                 .catch((err) => {
                     console.log(err);
                 });
-        });
+        })
     });
 }
 
