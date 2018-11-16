@@ -3,10 +3,10 @@ const Discord = require('discord.js');
 const redis = require('redis');
 const cache = redis.createClient(6379, '127.0.0.1');
 
-const handleCardFetch = require('./handleCardFetch');
-const helpText = require('./helpText');
-const adminUtils = require('./adminUtils');
-const prefix = require('./handlePrefixes');
+const handleCardFetch = require('./mtg/handleCardFetch');
+const helpText = require('./extra_utils/helpText');
+const adminUtils = require('./admin/adminUtils');
+const prefix = require('./extra_utils/handlePrefixes');
 
 const client = new Discord.Client();
 

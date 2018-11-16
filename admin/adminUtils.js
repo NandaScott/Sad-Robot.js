@@ -5,7 +5,7 @@ const cache = redis.createClient(6379, '127.0.0.1');
 
 const asyncGet = util.promisify(cache.get).bind(cache);
 
-let config = require('./config.json');
+let config = require('../config.json');
 
 /*
 This function handles everything for the feedback command.
