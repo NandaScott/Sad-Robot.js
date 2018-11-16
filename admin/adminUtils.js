@@ -1,7 +1,11 @@
 const Discord = require('discord.js');
-const fs = require('fs');
+const util = require('util');
+const redis = require('redis');
+const cache = redis.createClient(6379, '127.0.0.1');
 
-let config = require('./config.json');
+const asyncGet = util.promisify(cache.get).bind(cache);
+
+let config = require('../config.json');
 
 /*
 This function handles everything for the feedback command.
@@ -39,7 +43,8 @@ function getFeedback(msg, args) {
         })
         .then((sentReaction) => {
             const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-            return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 * 60 });
+            // return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 * 60 });
+            return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 });
         })
         .then((collected) => {
             if (collected.size > 0) {
@@ -51,8 +56,8 @@ function getFeedback(msg, args) {
         })
 }
 
-function banUser(msg) {
-    fs.readFile('bannedUsers.json', (err, data) => {
+function banUser(msg, redis_client) {
+    cache.get('bannedUsers', (err, reply) => {
         let client = msg.channel.client;
 
         if (err) {
@@ -65,17 +70,17 @@ function banUser(msg) {
                 });
         }
 
-        let bannedUsersFile = JSON.parse(data);
+        let bannedUsers = JSON.parse(reply);
 
-        bannedUsersFile.users.push({
+        bannedUsers.users.push({
             id: msg.author.id,
             username: msg.author.username,
             bannedAt: Date()
         });
-    
-        let newUsers = JSON.stringify(bannedUsersFile, null, 4);
-    
-        fs.writeFile('./bannedUsers.json', newUsers, (err) => {
+
+        let newUsers = JSON.stringify(bannedUsers);
+
+        cache.set('bannedUsers', newUsers, (err, reply) => {
             if (err) {
                 client.fetchUser(config.myId)
                     .then((user) => {
@@ -93,14 +98,22 @@ function banUser(msg) {
                 .catch((err) => {
                     console.log(err);
                 });
-        });
+        })
     });
 }
 
-function search(key, array) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].id === key) {
+async function search(author) {
+    
+    let list = JSON.parse(await asyncGet('bannedUsers'));
+
+
+    for (let i = 0; i < list.users.length; i++) {
+        const user = list.users[i];
+        
+        if (author === user.id) {
             return true;
+        } else {
+            return false;
         }
     }
 }
