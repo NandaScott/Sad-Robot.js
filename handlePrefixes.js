@@ -1,9 +1,7 @@
-const redis = require('redis');
 const asyncRedis = require('async-redis');
-const cache = redis.createClient(6379, '127.0.0.1');
 const asyncCache = asyncRedis.createClient(6379, '127.0.0.1');
 
-function setServerPrefix(msg, args) {
+function setServerPrefix(cache, msg, args) {
     cache.set(msg.channel.guild.id, args[0], (err, reply) => {
         if (err) {
             msg.channel.send('There was an issue with writing your prefix.');
@@ -15,7 +13,7 @@ function setServerPrefix(msg, args) {
     });
 }
 
-function getServerPrefix(msg) {
+function getServerPrefix(cache, msg) {
     cache.get(msg.channel.guild.id, (err, reply) => {
         if (err) {
             msg.channel.send('There was an issue with getting your server\'s prefix.');
@@ -29,21 +27,21 @@ function getServerPrefix(msg) {
     });
 }
 
-function main(msg, args) {
+function main(cache, msg, args) {
     if (checkPrivelege(msg)) {
         if (args.length > 1) {
             msg.channel.send('Please only provide the prefix.')
         }
         else if (args.length == 0) {
-            getServerPrefix(msg);
+            getServerPrefix(cache, msg);
         }
         else if (args.length == 1) {
-            setServerPrefix(msg, args);
+            setServerPrefix(cache, msg, args);
         }
     }
 }
 
-function setDefaultPrefix() {
+function setDefaultPrefix(cache) {
     cache.set('defaultPrefix', '?', (err, reply) => {
         if (err) console.error(err);
 
@@ -69,7 +67,7 @@ const checkPrefix = async (msg) => {
     return reply;
 }
 
-function resetPrefix(msg) {
+function resetPrefix(cache, msg) {
     if (checkPrivelege(msg)) {
         cache.del(msg.channel.guild.id, (err, reply) => {
             if (err) console.log(err);

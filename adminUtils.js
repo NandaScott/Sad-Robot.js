@@ -1,6 +1,9 @@
 const Discord = require('discord.js');
+const util = require('util');
 const redis = require('redis');
 const cache = redis.createClient(6379, '127.0.0.1');
+
+const asyncGet = util.promisify(cache.get).bind(cache);
 
 let config = require('./config.json');
 
@@ -40,7 +43,8 @@ function getFeedback(msg, args) {
         })
         .then((sentReaction) => {
             const filter = (reaction, user) => reaction.emoji.name === '🚷' && user.id === config.myId;
-            return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 * 60 });
+            // return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 * 60 });
+            return sentReaction.message.awaitReactions(filter, { time: 1000 * 60 });
         })
         .then((collected) => {
             if (collected.size > 0) {
@@ -68,7 +72,7 @@ function banUser(msg, redis_client) {
 
         let bannedUsers = JSON.parse(reply);
 
-        bannedUsers.user.push({
+        bannedUsers.users.push({
             id: msg.author.id,
             username: msg.author.username,
             bannedAt: Date()
@@ -98,10 +102,18 @@ function banUser(msg, redis_client) {
     });
 }
 
-function search(key, array) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].id === key) {
+async function search(author) {
+    
+    let list = JSON.parse(await asyncGet('bannedUsers'));
+
+
+    for (let i = 0; i < list.users.length; i++) {
+        const user = list.users[i];
+        
+        if (author === user.id) {
             return true;
+        } else {
+            return false;
         }
     }
 }

@@ -12,7 +12,20 @@ const client = new Discord.Client();
 
 client.on('ready', () => {
     console.log('Logged in!');
-    prefix.setDefaultPrefix();
+    prefix.setDefaultPrefix(cache);
+
+    cache.get('bannedUsers', (err, reply) => {
+        if (err) console.log(err);
+
+        if (reply === null) {
+            console.log('No ban list found. Creating empty list.')
+            let init = { users: [] };
+
+            cache.set('bannedUsers', JSON.stringify(init));
+        } else {
+            console.log('Ban list found.')
+        }
+    });
 });
 
 client.on('message', async (msg) => {
@@ -20,7 +33,7 @@ client.on('message', async (msg) => {
     if (msg.author.bot) return;
 
     // Ignore banned users
-    if (adminUtils.search(msg.author.id, bannedUsers.users)) {
+    if (await adminUtils.search(msg.author.id)) {
         return;
     }
 
@@ -47,7 +60,7 @@ client.on('message', async (msg) => {
             m.edit(`Pong! Latency is ${m.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
             break;
         case 'prefix':
-            prefix.main(msg, args);
+            prefix.main(cache, msg, args);
             break;
     }
 
@@ -59,7 +72,7 @@ client.on('message', async (msg) => {
             msg.reply('Thank you!');
             break;
         case 'resetprefix':
-            prefix.resetPrefix(msg);
+            prefix.resetPrefix(cache, msg);
             break;
     }
 });
