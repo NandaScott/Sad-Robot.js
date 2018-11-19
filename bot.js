@@ -47,13 +47,7 @@ client.on('message', async (msg) => {
             adminUtils.getFeedback(msg, args);
             break;
         case 'help':
-            client.fetchUser(msg.author.id)
-                .then((user) => {
-                    user.send(helpText.helpText(serverPrefix));
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
+            msg.author.send(helpText.helpText(serverPrefix));
             break;
         case 'ping':
             const m = await msg.channel.send('Ping?');
