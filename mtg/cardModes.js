@@ -5,6 +5,8 @@ const redis = require('redis');
 
 const cache = redis.createClient(6379, '127.0.0.1');
 
+const errorString = (scryfallCard, autocomplete) => `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
+
 cache.on('ready', () => {
     console.log('Connected to redis.')
 });
@@ -102,8 +104,11 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
             
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -150,8 +155,11 @@ async function cardOracleHandler(msg, paramsObject, cacheReply, getCard=false) {
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -180,8 +188,11 @@ async function cardPriceHandler(msg, paramsObject, cacheReply, getCard=false) {
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -209,8 +220,11 @@ async function cardLegalHandler(msg, paramsObject, cacheReply, getCard=false) {
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
         cache.setex(`${paramsObject.card} price`, 1000 * 60 * 60, JSON.stringify(scryfallCard));
@@ -238,8 +252,11 @@ async function cardRulesHandler(msg, paramsObject, cacheReply, getCard=false) {
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -284,8 +301,11 @@ async function cardFlavorHandler(msg, paramsObject, cacheReply, getCard = false)
         if (scryfallCard.object === 'error') {
             let autocomplete = await requestHelpers.autocompleteName(paramsObject);
 
-            let errorString = `${scryfallCard.details}\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -337,8 +357,11 @@ async function uniquePrintsHandler(msg, paramsObject, cacheReply, getCard=false)
                 return;
             }
 
-            let errorString = `\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
 
@@ -401,8 +424,11 @@ async function randomCardHandler(msg, paramsObject, cacheReply, getCard=false) {
 
             msg.channel.send(cardList.details);
 
-            let errorString = `\n\nYou may have meant one of the following:\n${autocomplete.data.join('\n')}`;
-            msg.channel.send(errorString);
+            if (autocomplete.data.length > 0) {
+                msg.channel.send(errorString(scryfallCard, autocomplete));
+            } else {
+                msg.channel.send(`${scryfallCard.details}`);
+            }
             return;
         }
     } else {
