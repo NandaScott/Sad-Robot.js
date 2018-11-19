@@ -78,7 +78,7 @@ function resetPrefix(cache, msg) {
 }
 
 function checkPrivelege(msg) {
-    if (!msg.member.roles.some(r => ['Administrator', 'Moderator'].includes(r.name))) {
+    if (!msg.member.hasPermission('MANAGE_GUILD')) {
         msg.channel.send('Sorry, you don\'t have permissions to use this.');
         return false;
     }
