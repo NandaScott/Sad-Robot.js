@@ -47,4 +47,20 @@ not to spam the chat though!
 To get my help text for all of my functions, just type ?help either here or in ${guildname}.
 `};
 
-module.exports = { helpText, greeting }
+const onJoin = (guildname) => `
+Hi! My name is Sad Robot, I'm excited to be a part of ${guildname}!
+
+My primary function is to provide all manners of MTG related functions. I can fetch any card if you type
+[[Solemn Simulacrum]] in any chat. I have a variety of different things that I can get, including specific set editions.
+
+    You should also know that I have the ability to change my command prefix (i.e. the symbol used before any command \`?help\`).
+To set your prefix use the \`?prefix\` command and choose your symbol. I would not reccommend using the \`/\` symbol, since
+Discord uses that for built in commands and that could get confusing.
+    In the event that you forget what prefix you've set, simply type \`resetprefix\` into any chat and I'll reset it to default.
+You should also know that the only people who can use these commands are anyone with the 'Manage Roles' permission. This functionality is not available to
+users of any other role.
+
+If you'd like to see more of what I can do, just type \`?help\` here. Have fun!
+`;
+
+module.exports = { helpText, greeting, onJoin }

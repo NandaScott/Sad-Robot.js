@@ -89,4 +89,20 @@ client.on('guildMemberAdd', (member) => {
         })
 });
 
+client.on('guildCreate', (guild) => {
+    guild.members.forEach((member) => {
+        if (member.hasPermission('ADMINISTRATOR') && member.id != client.user.id) {
+            member.send(helpText.onJoin(guild.name));
+        }
+    });
+});
+
+client.on('guildDelete', (guild) => {
+    cache.del(guild.id, (err, reply) => {
+        if (err) console.log(err);
+
+        console.log(`Successfully removed prefix for server ${guild.id}`);
+    });
+});
+
 client.login(config.token)
