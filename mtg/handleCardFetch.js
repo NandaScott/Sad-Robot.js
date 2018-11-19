@@ -12,7 +12,7 @@ function handleCardFetch(msg) {
             let mode = card.match(/([|]oracle|price|legal|rules|flavor)/g);
             let setCode = card.match(/([\w]+:[A-Za-z\d]+)/g);
 
-            if (cardName === '🎲') {
+            if (cardName.match(/🎲+/g)) {
                 return {
                     card: '',
                     mode: 'random',
