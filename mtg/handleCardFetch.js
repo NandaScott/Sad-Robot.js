@@ -41,8 +41,6 @@ function handleCardFetch(msg) {
             return final;
         });
 
-        console.log(cardsFound);
-
         for (let i = 0; i < cardsFound.length; i++) {
             setTimeout(() => {
                 switch (cardsFound[i].mode) {
