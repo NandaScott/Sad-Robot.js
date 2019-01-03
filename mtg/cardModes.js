@@ -96,9 +96,8 @@ async function cardImageHandler(msg, paramsObject, cacheReply, getCard=false) {
 
     let startTimer = new Date().getTime();
     let scryfallCard;
-    
-    if (getCard) {
 
+    if (getCard) {
         scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
         if (scryfallCard.object === 'error') {

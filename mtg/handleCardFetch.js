@@ -8,7 +8,7 @@ function handleCardFetch(msg) {
     if (cardsFound) {
 
         cardsFound = cardsFound.map((card) => {
-            let cardName = card.match(/([\w\s🎲]+)/g)[0];
+            let cardName = card.match(/([\w\s🎲\,\'\.]+)/g)[0];
             let mode = card.match(/([|\s]oracle|price|legal|rules|flavor|unique)/g);
             let setCode = card.match(/([\w]+:[A-Za-z\d]+)/g);
 
