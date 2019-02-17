@@ -84,9 +84,10 @@ function priceEmbed(msg, seconds, object) {
             .setURL(object[0].url)
             .setTitle(`**${object[0].name}**`)
             .setThumbnail(object[0].image)
-            .addField('USD', object[0].usd)
-            .addField('EUR', object[0].eur)
-            .addField('TIX', object[0].tix)
+            .addField('USD', `$${object[0].usd}`)
+            .addField('USD Foil', `$${object.usdFoil}`)
+            .addField('EUR', `€${object[0].eur}`)
+            .addField('TIX', `${object[0].tix}`)
             .setColor(blue)
             .setFooter(`Fetch took: ${seconds} seconds.`);
 
@@ -98,9 +99,10 @@ function priceEmbed(msg, seconds, object) {
         .setURL(object.url)
         .setTitle(`**${object.name}**`)
         .setThumbnail(object.image)
-        .addField('USD', object.usd)
-        .addField('EUR', object.eur)
-        .addField('TIX', object.tix)
+        .addField('USD', `$${object.usd}`)
+        .addField('USD Foil', `$${object.usdFoil}`)
+        .addField('EUR', `€${object.eur}`)
+        .addField('TIX', `${object.tix}`)
         .setColor(0x1b6f9)
         .setFooter(`Fetch took: ${seconds} seconds.`);
     
