@@ -5,7 +5,7 @@
   "main": "bot.js",
   "dependencies": {
     "async-redis": "^1.1.4",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "discord.js": "^11.3.2",
     "npm": "^6.13.4",
     "redis": "^2.8.0"
