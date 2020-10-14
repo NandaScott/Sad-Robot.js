@@ -123,3 +123,7 @@ client.on('guildDelete', (guild) => {
 });
 
 client.login(process.env.TOKEN);
+
+module.exports = {
+  errorDM,
+};
