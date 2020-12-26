@@ -1,48 +1,49 @@
-function fetchCard(msg) {
+const Discord = require('discord.js');
+const { name } = require('./requests');
+
+const { getCardsFromMessage } = require('./parsers');
+
+// original message ✔ -> list of cards pinged -> fetchAllCards -> create appropriate embeds for each card -> send all embeds called for.
+function fetchCards(msg) {
   return new Promise((res, rej) => {
-    let cardsFound = msg.content.match(/(\[\[[\w\s\'\.\,|/:🎲]+\]\])+/g);
+    let cardsFound = getCardsFromMessage(msg.content);
 
-    if (cardsFound) {
-      cardsFound = cardsFound.map((card) => {
-        let cardName = card.match(/([\w\s🎲\,\'\.]+)/g)[0];
-        let mode = card.match(/([|\s]oracle|price|legal|rules|flavor|unique)/g);
-        let setCode = card.match(/([\w]+:[A-Za-z\d]+)/g);
-
-        if (cardName.match(/🎲+/g)) {
-          return {
-            card: '',
-            mode: 'random',
-            setCode: '',
-          };
-        }
-
-        if (mode) {
-          mode = mode[0].replace('|', '').trim();
+    let cardList = cardsFound.map(async (obj) => {
+      const scryfallCard = await name({
+        fuzzy: obj.name,
+        set: obj.set,
+      }).catch((err) => {
+        const { details } = err.response.data.data;
+        if (details) {
+          msg.channel.send(details);
         } else {
-          mode = '';
+          rej(err);
         }
-
-        if (setCode) {
-          setCode = setCode[0].split(':').pop().trim();
-        } else {
-          setCode = '';
-        }
-
-        let final = {
-          card: cardName,
-          mode: mode,
-          setCode: setCode,
-        };
-
-        return final;
       });
 
-      cardsFound.forEach((val) => {
-        switch (val.mode) {
-          default:
-            break;
-        }
-      });
-    }
+      return { ...obj, cardData: scryfallCard.data };
+    });
+
+    // cardsFound.map((val) => name({ fuzzy: val.card, set: val.setCode }));
+
+    // cardsFound.forEach((val) => {
+    //   const startTimer = new Date().getTime();
+    //   const endTimer = () =>
+    //     parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+    //   switch (val.mode) {
+    //     default:
+    //       name({ fuzzy: val.card, set: val.setCode })
+    //         .then((resp) => {
+    //           const embedMsg = createEmbedFromCard(resp.data);
+    //           const seconds = endTimer();
+    //           embedMsg.setFooter(`Fetch took: ${seconds} seconds.`);
+    //           res(embedMsg);
+    //         })
+    //         .catch((err) => rej(err.response.data));
+    //       break;
+    //   }
+    // });
   });
 }
+
+module.exports = { fetchCards };

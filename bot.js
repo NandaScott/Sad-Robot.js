@@ -6,6 +6,7 @@ const helpText = require('./extra_utils/helpText');
 const adminUtils = require('./admin/adminUtils');
 const prefix = require('./extra_utils/handlePrefixes');
 const cogs = require('./cogs/cogs');
+const { fetchCards } = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
 
@@ -13,9 +14,7 @@ function errorDM(err) {
   client.users
     .fetch(process.env.MASTER_ID)
     .then((user) => user.createDM())
-    .then((dm) => {
-      dm.send('Error happened! ```' + err.stack + '```');
-    })
+    .then((dm) => dm.send('Error happened! ```' + err.stack + '```'))
     .catch(console.error);
 }
 
@@ -81,6 +80,11 @@ client.on('message', async (msg) => {
 
   switch (msg.content.toLowerCase()) {
     default:
+      fetchCards(msg)
+        .then((cards) => {
+          msg.channel.send(cards);
+        })
+        .catch(errorDM);
       break;
     case 'good bot':
       msg.reply('Thank you!');
