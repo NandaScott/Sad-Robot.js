@@ -104,40 +104,48 @@ function handleTransform(scryfallObject, returnArray = false) {
 
 function handleFlip(scryfallObject, returnArray = false) {
   if (returnArray) {
-    let array = [];
+    return new Array(scryfallObject.card_faces.length)
+      .fill(undefined)
+      .map((val, i) => {
+        const base = generateBase(scryfallObject);
+        const {
+          image_uris,
+          scryfall_uri,
+          card_faces,
+          prices,
+          legalities,
+        } = scryfallObject;
+        const {
+          name,
+          power,
+          toughness,
+          mana_cost,
+          type_line,
+          oracle_text,
+          flavor_text,
+        } = card_faces[i];
+        const { usd, usd_foil, eur, tix } = prices;
 
-    for (let i = 0; i < scryfallObject.card_faces.length; i++) {
-      let base = {
-        name: scryfallObject.card_faces[i].name,
-        image: scryfallObject.image_uris.border_crop,
-        thumbnail: scryfallObject.image_uris.small,
-        url: scryfallObject.scryfall_uri,
-        power:
-          'power' in scryfallObject.card_faces[i]
-            ? scryfallObject.card_faces[i].power
-            : '',
-        toughness:
-          'toughness' in scryfallObject.card_faces[i]
-            ? scryfallObject.card_faces[i].toughness
-            : '',
-        cost:
-          'mana_cost' in scryfallObject.card_faces[i]
-            ? scryfallObject.card_faces[i].mana_cost
-            : '',
-        usd: 'usd' in scryfallObject ? scryfallObject.usd : 'N/A',
-        eur: 'eur' in scryfallObject ? scryfallObject.eur : 'N/A',
-        tix: 'tix' in scryfallObject ? scryfallObject.tix : 'N/A',
-        legalities: scryfallObject.legalities,
-        typeLine: scryfallObject.card_faces[i].type_line,
-        oracleText: scryfallObject.card_faces[i].oracle_text,
-        flavorText:
-          'flavor_text' in scryfallObject ? scryfallObject.flavor_text : 'N/A',
-      };
+        const newVals = {
+          name: name,
+          image: image_uris.border_crop,
+          thumbnail: image_uris.small,
+          url: scryfall_uri,
+          power: power || '',
+          toughness: toughness || '',
+          cost: mana_cost || '',
+          usd: usd || 'N/A',
+          usdFoil: usd_foil || 'N/A',
+          eur: eur || 'N/A',
+          tix: tix || 'N/A',
+          legalities: legalities,
+          typeLine: type_line,
+          oracleText: oracle_text,
+          flavorText: flavor_text,
+        };
 
-      array.push(base);
-    }
-
-    return array;
+        return { ...base, ...newVals };
+      });
   }
 
   let base = {

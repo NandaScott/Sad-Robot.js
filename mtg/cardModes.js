@@ -36,6 +36,29 @@ const cardLayoutMapping = {
   art_series: cardLayoutHandlers.handleTransform,
 };
 
+const doubleFaceLayouts = ['transform', 'double_faced_token', 'modal_dfc'];
+
+const forOneHour = 1000 * 60 * 60;
+
+const endTimer = (start) =>
+  parseFloat(((new Date().getTime() - start) / 1000) % 60);
+
+const isDoubleFaced = (card) => doubleFaceLayouts.indexOf(card.layout) > -1;
+
+const handleNoCardFound = async (card, params, msg) => {
+  if (card.object === 'error') {
+    const autocomplete = await requestHelpers.autocompleteName(params);
+
+    if (autocomplete.data.length > 0) {
+      msg.channel.send(errorString(card, autocomplete));
+    } else {
+      msg.channel.send(card.details);
+    }
+    return true;
+  }
+  return false;
+};
+
 function handleCardLayout(scryfallObject, returnArray) {
   const handler = cardLayoutMapping[scryfallObject.layout];
 
@@ -45,7 +68,7 @@ function handleCardLayout(scryfallObject, returnArray) {
 }
 
 function checkCache(msg, paramsObject, embedType) {
-  key = `${paramsObject.card} ${embedType}${paramsObject.setCode}`;
+  const key = `${paramsObject.card} ${embedType}${paramsObject.setCode}`;
 
   cache.get(key, (err, reply) => {
     if (err) {
@@ -99,50 +122,32 @@ async function cardImageHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
-
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} image`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(scryfallCard)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params;
-
-  let doubleFaceLayouts = ['transform', 'double_faced_token', 'modal_dfc'];
-
-  if (doubleFaceLayouts.indexOf(scryfallCard.layout) > -1) {
-    params = handleCardLayout(scryfallCard, (returnArray = true));
-
-    for (let i = 0; i < params.length; i++) {
-      embedHelpers.imageEmbed(msg, seconds, params[i]);
-    }
-    return;
+  if (isDoubleFaced(scryfallCard)) {
+    const params = handleCardLayout(scryfallCard, (returnArray = true));
+    params.forEach((param) => embedHelpers.imageEmbed(msg, seconds, param));
   } else {
-    params = handleCardLayout(scryfallCard, (returnArray = false));
+    const params = handleCardLayout(scryfallCard, (returnArray = false));
+    embedHelpers.imageEmbed(msg, seconds, params);
   }
-
-  embedHelpers.imageEmbed(msg, seconds, params);
 }
 
 async function cardOracleHandler(
@@ -151,35 +156,26 @@ async function cardOracleHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
-
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} oracle`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(scryfallCard)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params = handleCardLayout(scryfallCard, (returnArray = true));
+  const params = handleCardLayout(scryfallCard, (returnArray = true));
 
   embedHelpers.oracleEmbed(msg, seconds, params);
 }
@@ -190,35 +186,26 @@ async function cardPriceHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
-
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} price`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(scryfallCard)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params = handleCardLayout(scryfallCard, (returnArray = true));
+  const params = handleCardLayout(scryfallCard, (returnArray = true));
 
   embedHelpers.priceEmbed(msg, seconds, params);
 }
@@ -229,34 +216,26 @@ async function cardLegalHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
     cache.setex(
       `${paramsObject.card} price`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(scryfallCard)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params = handleCardLayout(scryfallCard, (returnArray = true));
+  const params = handleCardLayout(scryfallCard, (returnArray = true));
 
   embedHelpers.legalEmbed(msg, seconds, params);
 }
@@ -267,25 +246,16 @@ async function cardRulesHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard, cardRulings;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
     cardRulings = await requestHelpers.cardRulesById(scryfallCard.id);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
-
-    if (cardRulings.data.length == 0) {
+    if (cardRulings.data.length === 0) {
       msg.channel.send(`${scryfallCard.name} has no current rulings.`);
       return;
     }
@@ -297,23 +267,22 @@ async function cardRulesHandler(
     cardRulings.rulingsList = cardRulings.data;
     delete cardRulings.data;
 
-    let combine = Object.assign(scryfallCard, cardRulings);
+    const combine = { ...scryfallCard, ...cardRulings };
 
     cache.setex(
       `${paramsObject.card} rules`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(combine)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params = handleCardLayout(scryfallCard);
+  const params = handleCardLayout(scryfallCard);
 
-  params.rulingsList =
-    'rulingsList' in scryfallCard ? scryfallCard.rulingsList : cardRulings.data;
+  params.rulingsList = scryfallCard?.rulingsList || cardRulings.data;
 
   embedHelpers.rulesEmbed(msg, seconds, params);
 }
@@ -324,35 +293,26 @@ async function cardFlavorHandler(
   cacheReply,
   getCard = false
 ) {
-  let startTimer = new Date().getTime();
+  const startTimer = new Date().getTime();
   let scryfallCard;
 
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (scryfallCard.object === 'error') {
-      let autocomplete = await requestHelpers.autocompleteName(paramsObject);
-
-      if (autocomplete.data.length > 0) {
-        msg.channel.send(errorString(scryfallCard, autocomplete));
-      } else {
-        msg.channel.send(`${scryfallCard.details}`);
-      }
-      return;
-    }
+    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} flavor`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(scryfallCard)
     );
   } else {
     scryfallCard = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
-  let params = handleCardLayout(scryfallCard);
+  const params = handleCardLayout(scryfallCard);
 
   embedHelpers.flavorEmbed(msg, seconds, params);
 }
@@ -363,9 +323,9 @@ async function uniquePrintsHandler(
   cacheReply,
   getCard = false
 ) {
-  let forbiddenCards = ['plains', 'island', 'swamp', 'mountain', 'forest'];
+  const forbiddenCards = ['plains', 'island', 'swamp', 'mountain', 'forest'];
 
-  if (forbiddenCards.indexOf(paramsObject.card) > -1) {
+  if (forbiddenCards.includes(paramsObject.card)) {
     msg.channel.send(
       "You may not search that card with the `unique` mode.\nHere's a link you can use:\n" +
         `https://scryfall.com/search?q=!"${paramsObject.card.replace(
@@ -388,7 +348,7 @@ async function uniquePrintsHandler(
       msg.channel.send(cardList.details);
 
       // If no autocompletion is found just break.
-      if (autocomplete.data == 0) {
+      if (autocomplete.data === 0) {
         return;
       }
 
@@ -402,14 +362,14 @@ async function uniquePrintsHandler(
 
     cache.setex(
       `${paramsObject.card} unique`,
-      1000 * 60 * 60,
+      forOneHour,
       JSON.stringify(cardList)
     );
   } else {
     cardList = JSON.parse(cacheReply);
   }
 
-  let seconds = parseFloat(((new Date().getTime() - startTimer) / 1000) % 60);
+  const seconds = endTimer(startTimer);
 
   let newList = cardList.data.map((card) => {
     return `[${card.set.toUpperCase()}: ${card.set_name}](${
