@@ -30,16 +30,6 @@ function getCardsFromMessage(messageString) {
     }));
 }
 
-function fetchAllCards(cardList) {
-  const promises = cardList.map((obj) =>
-    name({ fuzzy: obj.name, set: obj.set })
-  );
-
-  return Promise.all(promises)
-    .then((scryfallCardList) => scryfallCardList.map((resp) => resp.data))
-    .catch(console.error);
-}
-
 function createEmbed(queryObject) {
   const embedDefaults = (card) => ({
     color: 0x1b6f9,

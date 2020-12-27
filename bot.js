@@ -6,9 +6,11 @@ const helpText = require('./extra_utils/helpText');
 const adminUtils = require('./admin/adminUtils');
 const prefix = require('./extra_utils/handlePrefixes');
 const cogs = require('./cogs/cogs');
-const { fetchCards } = require('./cogs/promiseCard');
+const { startFetch, fetchAllCards } = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
+
+require('dotenv').config();
 
 function errorDM(err) {
   client.users
@@ -17,9 +19,6 @@ function errorDM(err) {
     .then((dm) => dm.send('Error happened! ```' + err.stack + '```'))
     .catch(console.error);
 }
-
-require('dotenv').config();
-
 client.on('ready', () => {
   console.log('Logged in!', new Date().toISOString());
   prefix.setDefaultPrefix(cache);
@@ -70,19 +69,19 @@ client.on('message', async (msg) => {
     case 'prefix':
       prefix.main(cache, msg, args);
       break;
-    case 'random':
-      cogs
-        .promiseception()
-        .then((val) => msg.channel.send(val.name))
-        .catch(errorDM);
-      break;
   }
 
   switch (msg.content.toLowerCase()) {
     default:
-      fetchCards(msg)
-        .then((cards) => {
-          msg.channel.send(cards);
+      startFetch(msg)
+        .then((requestedCards) => {
+          // fetchAllCards(requestedCards)
+          const stringified = JSON.stringify(requestedCards);
+          console.log(stringified);
+          msg.channel.send('asdf');
+        })
+        .then((modifiedReqests) => {
+          msg.channel.send(JSON.stringify(modifiedReqests));
         })
         .catch(errorDM);
       break;
