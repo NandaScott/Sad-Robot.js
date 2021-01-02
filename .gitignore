@@ -4,3 +4,4 @@ bannedUsers.json
 dump.rdb
 example_card_objects
 *_test.js
+.env
