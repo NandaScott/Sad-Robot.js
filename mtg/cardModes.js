@@ -45,7 +45,7 @@ const endTimer = (start) =>
 
 const isDoubleFaced = (card) => doubleFaceLayouts.indexOf(card.layout) > -1;
 
-const await handleNoCardFound = async (card, params, msg) => {
+const handleNoCardFound = async (card, params, msg) => {
   if (card.object === 'error') {
     const autocomplete = await requestHelpers.autocompleteName(params);
 
