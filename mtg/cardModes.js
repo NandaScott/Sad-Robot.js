@@ -45,7 +45,7 @@ const endTimer = (start) =>
 
 const isDoubleFaced = (card) => doubleFaceLayouts.indexOf(card.layout) > -1;
 
-const handleNoCardFound = async (card, params, msg) => {
+const await handleNoCardFound = async (card, params, msg) => {
   if (card.object === 'error') {
     const autocomplete = await requestHelpers.autocompleteName(params);
 
@@ -128,7 +128,7 @@ async function cardImageHandler(
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} image`,
@@ -162,7 +162,7 @@ async function cardOracleHandler(
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} oracle`,
@@ -192,7 +192,7 @@ async function cardPriceHandler(
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} price`,
@@ -222,7 +222,7 @@ async function cardLegalHandler(
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} price`,
@@ -253,7 +253,7 @@ async function cardRulesHandler(
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
     cardRulings = await requestHelpers.cardRulesById(scryfallCard.id);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     if (cardRulings.data.length === 0) {
       msg.channel.send(`${scryfallCard.name} has no current rulings.`);
@@ -299,7 +299,7 @@ async function cardFlavorHandler(
   if (getCard) {
     scryfallCard = await requestHelpers.cardsByName(paramsObject);
 
-    if (handleNoCardFound(scryfallCard, paramsObject, msg)) return;
+    if (await handleNoCardFound(scryfallCard, paramsObject, msg)) return;
 
     cache.setex(
       `${paramsObject.card} flavor`,
