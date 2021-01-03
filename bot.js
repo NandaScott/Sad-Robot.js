@@ -6,7 +6,11 @@ const helpText = require('./extra_utils/helpText');
 const adminUtils = require('./admin/adminUtils');
 const prefix = require('./extra_utils/handlePrefixes');
 const cogs = require('./cogs/cogs');
-const { startFetch, fetchAllCards } = require('./cogs/promiseCard');
+const {
+  startFetch,
+  fetchAllCards,
+  constructEmbeds,
+} = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
 
@@ -19,6 +23,7 @@ function errorDM(err) {
     .then((dm) => dm.send('Error happened! ```' + err.stack + '```'))
     .catch(console.error);
 }
+
 client.on('ready', () => {
   console.log('Logged in!', new Date().toISOString());
   prefix.setDefaultPrefix(cache);
@@ -73,15 +78,22 @@ client.on('message', async (msg) => {
 
   switch (msg.content.toLowerCase()) {
     default:
-      startFetch(msg)
-        .then((requestedCards) => {
-          // fetchAllCards(requestedCards)
-          const stringified = JSON.stringify(requestedCards);
-          console.log(stringified);
-          msg.channel.send('asdf');
+      msg
+        .react('⏱️')
+        .then((msgReaction) => startFetch(msgReaction.message))
+        .then((requestedCards) => fetchAllCards(requestedCards))
+        .then((promises) => Promise.all(promises))
+        .then((resps) => constructEmbeds(resps))
+        .then((embeds) => embeds.forEach((embed) => msg.channel.send(embed)))
+        .then(() => {
+          if (msg.channel.type !== 'dm') {
+            return msg.reactions.resolve('⏱️');
+          }
         })
-        .then((modifiedReqests) => {
-          msg.channel.send(JSON.stringify(modifiedReqests));
+        .then((reaction) => {
+          if (reaction) {
+            reaction.remove();
+          }
         })
         .catch(errorDM);
       break;
