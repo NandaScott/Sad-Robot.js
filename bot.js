@@ -5,7 +5,6 @@ const cache = redis.createClient(6379, '127.0.0.1');
 const helpText = require('./extra_utils/helpText');
 const adminUtils = require('./admin/adminUtils');
 const prefix = require('./extra_utils/handlePrefixes');
-const cogs = require('./cogs/cogs');
 const {
   startFetch,
   fetchAllCards,

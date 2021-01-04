@@ -1,6 +1,3 @@
-const { allSets, name } = require('./requests');
-const { ScryfallCard } = require('./scryfallcard');
-
 const getCardDeclarations = (string) =>
   string.match(/(\[\[[\w\s\'\.\,|/:🎲-]+\]\])+/g);
 
@@ -30,25 +27,4 @@ function getCardsFromMessage(messageString) {
     }));
 }
 
-function createEmbed(queryObject) {
-  const embedDefaults = (card) => ({
-    color: 0x1b6f9,
-    url: card.url,
-    title: `**${card.name}**`,
-    type: 'image',
-  });
-
-  const imageEmbed = (card) => ({
-    ...embedDefaults(card),
-    image: { url: card.image },
-  });
-
-  // switch (mode) {
-  //   default:
-  //     const card = new ScryfallCard(cardObj).getImage().getUrl().getName()
-  //       .relevantParts;
-  //     return new Discord.MessageEmbed(imageEmbed(card));
-  // }
-}
-
-module.exports = { getCardsFromMessage, createEmbed };
+module.exports = { getCardsFromMessage };
