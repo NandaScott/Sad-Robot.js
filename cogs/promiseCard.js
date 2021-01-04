@@ -2,7 +2,11 @@ const { getCardsFromMessage } = require('./parsers');
 const { name } = require('./requests');
 const Discord = require('discord.js');
 
-// original message ✔ -> list of cards pinged -> fetchAllCards -> create appropriate embeds for each card -> send all embeds called for.
+const startTimer = () => new Date().getTime();
+
+const endTimer = (start) =>
+  parseFloat(((new Date().getTime() - start) / 1000) % 60);
+
 function startFetch(msg) {
   return new Promise((res, rej) => {
     try {
@@ -17,10 +21,12 @@ function startFetch(msg) {
 function fetchAllCards(cardList) {
   return cardList.map((cardObj) => {
     return new Promise((res, rej) => {
+      const start = startTimer();
       try {
         name({ fuzzy: cardObj.name, set: cardObj.set })
           .then((resp) => {
-            res({ ...resp.data, modes: cardObj.modes });
+            const seconds = endTimer(start);
+            res({ ...resp.data, modes: cardObj.modes, timer: seconds });
           })
           .catch((err) => {
             if (err.response) {
@@ -45,6 +51,7 @@ function constructEmbeds(cardDataList) {
           url: card.scryfall_uri,
           title: `**${card.name}**`,
           type: 'image',
+          footer: { text: `Fetch took: ${card.timer} seconds.` },
         });
 
         const imageEmbed = (card) => ({

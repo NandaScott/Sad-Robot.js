@@ -87,8 +87,6 @@ client.on('message', async (msg) => {
         .then((promises) => Promise.all(promises))
         .then((resps) => constructEmbeds(resps))
         .then((embeds) => sendAllEmbeds(embeds, msg))
-        .then((sentMessages) => reactToAllEmbeds(sentMessages))
-        .then((embedCollection) => onReactEmbed(embedCollection))
         .then(() => {
           if (msg.channel.type !== 'dm') {
             return msg.reactions.resolve('⏱️');
