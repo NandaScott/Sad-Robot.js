@@ -10,6 +10,9 @@ const {
   startFetch,
   fetchAllCards,
   constructEmbeds,
+  sendAllEmbeds,
+  reactToAllEmbeds,
+  onReactEmbed,
 } = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
@@ -84,7 +87,9 @@ client.on('message', async (msg) => {
         .then((requestedCards) => fetchAllCards(requestedCards))
         .then((promises) => Promise.all(promises))
         .then((resps) => constructEmbeds(resps))
-        .then((embeds) => embeds.forEach((embed) => msg.channel.send(embed)))
+        .then((embeds) => sendAllEmbeds(embeds, msg))
+        .then((sentMessages) => reactToAllEmbeds(sentMessages))
+        .then((embedCollection) => onReactEmbed(embedCollection))
         .then(() => {
           if (msg.channel.type !== 'dm') {
             return msg.reactions.resolve('⏱️');

@@ -36,7 +36,7 @@ function fetchAllCards(cardList) {
   });
 }
 
-function constructEmbeds(cardDataList, client, channel) {
+function constructEmbeds(cardDataList) {
   return new Promise((res, rej) => {
     try {
       const messageList = cardDataList.map((scryResp) => {
@@ -61,4 +61,72 @@ function constructEmbeds(cardDataList, client, channel) {
   });
 }
 
-module.exports = { startFetch, fetchAllCards, constructEmbeds };
+function sendAllEmbeds(embedList, message) {
+  return new Promise((res, rej) => {
+    try {
+      const allMessages = embedList.map((embed) => message.channel.send(embed));
+      res(allMessages);
+    } catch (error) {
+      rej(error);
+    }
+  });
+}
+
+function reactToAllEmbeds(sentMessages) {
+  return new Promise((res, rej) => {
+    try {
+      sentMessages.forEach((msg) => {
+        msg
+          .then((msg) => msg.react('🔮'))
+          .then(({ message }) => message.react('💰'))
+          .then(({ message }) => message.react('⚖'))
+          .then(({ message }) => message.react('📏'))
+          .then(({ message }) => message.react('🌶'))
+          .then(({ message }) => message.react('❄'))
+          .then(({ message }) => {
+            const filter = (r) =>
+              ['🔮', '💰', '⚖', '📏', '🌶', '❄'].includes(r.emoji.name);
+            const timer = 1000 * 60 * 10;
+            return message.awaitReactions(filter, { time: timer });
+          })
+          .then((collected) => res(collected))
+          .catch((err) => rej(err));
+      });
+      res(null);
+    } catch (error) {
+      rej(error);
+    }
+  });
+}
+
+function onReactEmbed(embedCollection) {
+  return new Promise((res, rej) => {
+    try {
+      const mapping = {
+        '🔮': 'oracle',
+        '💰': 'price',
+        '⚖': 'legal',
+        '📏': 'rules',
+        '🌶': 'flavor',
+        '❄': 'unique',
+      };
+      console.log(embedCollection);
+
+      embedCollection.forEach((reaction) => {
+        const { embeds } = reaction.message;
+        console.log(embeds);
+      });
+    } catch (error) {
+      rej(error);
+    }
+  });
+}
+
+module.exports = {
+  startFetch,
+  fetchAllCards,
+  constructEmbeds,
+  sendAllEmbeds,
+  reactToAllEmbeds,
+  onReactEmbed,
+};
