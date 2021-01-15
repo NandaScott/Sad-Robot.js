@@ -68,7 +68,7 @@ function constructEmbeds(cardDataList) {
         const oracleEmbed = (card) => ({
           ...embedDefaults(card),
           thumbnail: {
-            url: imageUris.border_crop,
+            url: imageUris.small,
           },
           description: cardAsText(card),
         });
@@ -76,6 +76,9 @@ function constructEmbeds(cardDataList) {
         const priceEmbed = (card) => ({
           ...embedDefaults(card),
           fields: cardPrices(card),
+          thumbnail: {
+            url: imageUris.small,
+          },
         });
 
         return new Discord.MessageEmbed(priceEmbed(scryResp));
