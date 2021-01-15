@@ -11,7 +11,25 @@ const getCardValue = (valueName, cardObj, i = 0) => {
   return cardObj[valueName];
 };
 
-const betterPriceName = (name) => name.replace('_', ' ').toUpperCase();
+const formatFieldName = (name) => name.replace('_', ' ').toUpperCase();
+
+const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
+const objectToEmbedFields = (object, mode) => {
+  const modeMap = {
+    prices: [formatFieldName, (v) => v],
+    legalities: [capitalize, formatFieldName],
+  };
+  return Object.entries(object).map((val) => {
+    const [name, value] = val;
+    const [nameFormat, valueFormat] = modeMap[mode];
+    return {
+      name: nameFormat(name),
+      value: valueFormat(value),
+      inline: true,
+    };
+  });
+};
 
 const PT = (cardObj, i = 0) => {
   const power = getCardValue('power', cardObj, i) || '';
@@ -72,16 +90,8 @@ const cardAsText = (cardObj) => {
   return oracleComponents.join('\n');
 };
 
-const cardPrices = (cardObj) => {
-  const prices = getCardValue('prices', cardObj);
-  return Object.entries(prices).map((val) => {
-    const [name, price] = val;
-    return {
-      name: betterPriceName(name),
-      value: price,
-      inline: true,
-    };
-  });
+const keyToFields = (name, cardObj) => {
+  return objectToEmbedFields(getCardValue(name, cardObj), name);
 };
 
 function getCardsFromMessage(messageString) {
@@ -106,4 +116,9 @@ function getCardsFromMessage(messageString) {
     }));
 }
 
-module.exports = { getCardsFromMessage, cardAsText, cardPrices, getCardValue };
+module.exports = {
+  getCardsFromMessage,
+  cardAsText,
+  keyToFields,
+  getCardValue,
+};

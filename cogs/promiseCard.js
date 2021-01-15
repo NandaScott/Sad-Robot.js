@@ -2,7 +2,7 @@ const {
   getCardsFromMessage,
   cardAsText,
   getCardValue,
-  cardPrices,
+  keyToFields,
 } = require('./parsers');
 const { name } = require('./requests');
 const Discord = require('discord.js');
@@ -75,7 +75,15 @@ function constructEmbeds(cardDataList) {
 
         const priceEmbed = (card) => ({
           ...embedDefaults(card),
-          fields: cardPrices(card),
+          fields: keyToFields('prices', card),
+          thumbnail: {
+            url: imageUris.small,
+          },
+        });
+
+        const legalEmbed = (card) => ({
+          ...embedDefaults(card),
+          fields: keyToFields('legalities', card),
           thumbnail: {
             url: imageUris.small,
           },
