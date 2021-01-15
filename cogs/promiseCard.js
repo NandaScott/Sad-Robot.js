@@ -1,4 +1,4 @@
-const { getCardsFromMessage } = require('./parsers');
+const { getCardsFromMessage, cardAsText, getCardValue } = require('./parsers');
 const { name } = require('./requests');
 const Discord = require('discord.js');
 
@@ -46,20 +46,31 @@ function constructEmbeds(cardDataList) {
   return new Promise((res, rej) => {
     try {
       const messageList = cardDataList.map((scryResp) => {
+        const name = getCardValue('name', scryResp);
+        const imageUris = getCardValue('image_uris', scryResp);
         const embedDefaults = (card) => ({
           color: 0x1b6f9,
           url: card.scryfall_uri,
-          title: `**${card.name}**`,
-          type: 'image',
+          title: `**${name}**`,
           footer: { text: `Fetch took: ${card.timer} seconds.` },
         });
 
         const imageEmbed = (card) => ({
           ...embedDefaults(card),
-          image: { url: card.image_uris.border_crop },
+          image: { url: imageUris.border_crop },
         });
 
-        return new Discord.MessageEmbed(imageEmbed(scryResp));
+        const oracleEmbed = (card) => {
+          return {
+            ...embedDefaults(card),
+            thumbnail: {
+              url: imageUris.border_crop,
+            },
+            description: cardAsText(card),
+          };
+        };
+
+        return new Discord.MessageEmbed(oracleEmbed(scryResp));
       });
       res(messageList);
     } catch (error) {
@@ -129,6 +140,18 @@ function onReactEmbed(embedCollection) {
   });
 }
 
+function findTimerReaction(msg) {
+  if (msg.channel.type !== 'dm') {
+    return msg.reactions.resolve('⏱️');
+  }
+}
+
+function removeTimerReaction(reaction) {
+  if (reaction) {
+    return reaction.remove();
+  }
+}
+
 module.exports = {
   startFetch,
   fetchAllCards,
@@ -136,4 +159,6 @@ module.exports = {
   sendAllEmbeds,
   reactToAllEmbeds,
   onReactEmbed,
+  findTimerReaction,
+  removeTimerReaction,
 };

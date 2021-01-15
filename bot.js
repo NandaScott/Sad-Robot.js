@@ -12,6 +12,8 @@ const {
   sendAllEmbeds,
   reactToAllEmbeds,
   onReactEmbed,
+  findTimerReaction,
+  removeTimerReaction,
 } = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
@@ -87,16 +89,8 @@ client.on('message', async (msg) => {
         .then((promises) => Promise.all(promises))
         .then((resps) => constructEmbeds(resps))
         .then((embeds) => sendAllEmbeds(embeds, msg))
-        .then(() => {
-          if (msg.channel.type !== 'dm') {
-            return msg.reactions.resolve('⏱️');
-          }
-        })
-        .then((reaction) => {
-          if (reaction) {
-            reaction.remove();
-          }
-        })
+        .then(() => findTimerReaction(msg))
+        .then((react) => removeTimerReaction(react))
         .catch(errorDM);
       break;
     case 'good bot':
