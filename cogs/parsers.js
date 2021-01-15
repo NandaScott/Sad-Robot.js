@@ -11,6 +11,8 @@ const getCardValue = (valueName, cardObj, i = 0) => {
   return cardObj[valueName];
 };
 
+const betterPriceName = (name) => name.replace('_', ' ').toUpperCase();
+
 const PT = (cardObj, i = 0) => {
   const power = getCardValue('power', cardObj, i) || '';
   const toughness = getCardValue('toughness', cardObj, i) || '';
@@ -70,6 +72,18 @@ const cardAsText = (cardObj) => {
   return oracleComponents.join('\n');
 };
 
+const cardPrices = (cardObj) => {
+  const prices = getCardValue('prices', cardObj);
+  return Object.entries(prices).map((val) => {
+    const [name, price] = val;
+    return {
+      name: betterPriceName(name),
+      value: price,
+      inline: true,
+    };
+  });
+};
+
 function getCardsFromMessage(messageString) {
   const cardDeclarations = getCardDeclarations(messageString);
 
@@ -92,4 +106,4 @@ function getCardsFromMessage(messageString) {
     }));
 }
 
-module.exports = { getCardsFromMessage, cardAsText, getCardValue };
+module.exports = { getCardsFromMessage, cardAsText, cardPrices, getCardValue };

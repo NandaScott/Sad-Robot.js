@@ -1,4 +1,9 @@
-const { getCardsFromMessage, cardAsText, getCardValue } = require('./parsers');
+const {
+  getCardsFromMessage,
+  cardAsText,
+  getCardValue,
+  cardPrices,
+} = require('./parsers');
 const { name } = require('./requests');
 const Discord = require('discord.js');
 
@@ -60,17 +65,20 @@ function constructEmbeds(cardDataList) {
           image: { url: imageUris.border_crop },
         });
 
-        const oracleEmbed = (card) => {
-          return {
-            ...embedDefaults(card),
-            thumbnail: {
-              url: imageUris.border_crop,
-            },
-            description: cardAsText(card),
-          };
-        };
+        const oracleEmbed = (card) => ({
+          ...embedDefaults(card),
+          thumbnail: {
+            url: imageUris.border_crop,
+          },
+          description: cardAsText(card),
+        });
 
-        return new Discord.MessageEmbed(oracleEmbed(scryResp));
+        const priceEmbed = (card) => ({
+          ...embedDefaults(card),
+          fields: cardPrices(card),
+        });
+
+        return new Discord.MessageEmbed(priceEmbed(scryResp));
       });
       res(messageList);
     } catch (error) {
