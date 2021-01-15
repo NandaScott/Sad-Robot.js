@@ -23,6 +23,7 @@ const objectToEmbedFields = (object, mode) => {
   return Object.entries(object).map((val) => {
     const [name, value] = val;
     const [nameFormat, valueFormat] = modeMap[mode];
+    if (value === null) return {};
     return {
       name: nameFormat(name),
       value: valueFormat(value),
@@ -91,7 +92,12 @@ const cardAsText = (cardObj) => {
 };
 
 const keyToFields = (name, cardObj) => {
-  return objectToEmbedFields(getCardValue(name, cardObj), name);
+  const value = getCardValue(name, cardObj);
+  const embedFields = objectToEmbedFields(value, name);
+  const removeEmptyFields = embedFields.filter(
+    (val) => Object.keys(val).length !== 0
+  );
+  return removeEmptyFields;
 };
 
 function getCardsFromMessage(messageString) {

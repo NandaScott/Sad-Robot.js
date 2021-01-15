@@ -55,6 +55,10 @@ function constructEmbeds(cardDataList) {
         const imageUris = getCardValue('image_uris', scryResp);
         const smallImage = { url: imageUris.small };
         const largeImage = { url: imageUris.border_crop };
+        const isMultiFaced = 'card_faces' in scryResp;
+        if (scryResp.modes.length === 0) {
+          scryResp.modes = ['image'];
+        }
 
         const embedDefaults = (card) => ({
           color: 0x1b6f9,
@@ -92,7 +96,18 @@ function constructEmbeds(cardDataList) {
           description: getCardValue('flavor_text', card),
         });
 
-        return new Discord.MessageEmbed(flavorEmbed(scryResp));
+        const modeMap = {
+          image: imageEmbed,
+          oracle: oracleEmbed,
+          price: priceEmbed,
+          legal: legalEmbed,
+          flavor: flavorEmbed,
+        };
+
+        return scryResp.modes.map((mode) => {
+          const embedStyle = modeMap[mode];
+          return new Discord.MessageEmbed(embedStyle(scryResp));
+        });
       });
       res(messageList);
     } catch (error) {
@@ -104,7 +119,9 @@ function constructEmbeds(cardDataList) {
 function sendAllEmbeds(embedList, message) {
   return new Promise((res, rej) => {
     try {
-      const allMessages = embedList.map((embed) => message.channel.send(embed));
+      const allMessages = embedList.map((embeds) => {
+        embeds.forEach((embed) => message.channel.send(embed));
+      });
       res(allMessages);
     } catch (error) {
       rej(error);
