@@ -53,6 +53,9 @@ function constructEmbeds(cardDataList) {
       const messageList = cardDataList.map((scryResp) => {
         const name = getCardValue('name', scryResp);
         const imageUris = getCardValue('image_uris', scryResp);
+        const smallImage = { url: imageUris.small };
+        const largeImage = { url: imageUris.border_crop };
+
         const embedDefaults = (card) => ({
           color: 0x1b6f9,
           url: card.scryfall_uri,
@@ -62,34 +65,34 @@ function constructEmbeds(cardDataList) {
 
         const imageEmbed = (card) => ({
           ...embedDefaults(card),
-          image: { url: imageUris.border_crop },
+          image: largeImage,
         });
 
         const oracleEmbed = (card) => ({
           ...embedDefaults(card),
-          thumbnail: {
-            url: imageUris.small,
-          },
+          thumbnail: smallImage,
           description: cardAsText(card),
         });
 
         const priceEmbed = (card) => ({
           ...embedDefaults(card),
           fields: keyToFields('prices', card),
-          thumbnail: {
-            url: imageUris.small,
-          },
+          thumbnail: smallImage,
         });
 
         const legalEmbed = (card) => ({
           ...embedDefaults(card),
           fields: keyToFields('legalities', card),
-          thumbnail: {
-            url: imageUris.small,
-          },
+          thumbnail: smallImage,
         });
 
-        return new Discord.MessageEmbed(priceEmbed(scryResp));
+        const flavorEmbed = (card) => ({
+          ...embedDefaults(card),
+          thumbnail: smallImage,
+          description: getCardValue('flavor_text', card),
+        });
+
+        return new Discord.MessageEmbed(flavorEmbed(scryResp));
       });
       res(messageList);
     } catch (error) {
