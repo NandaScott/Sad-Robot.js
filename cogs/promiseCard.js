@@ -3,14 +3,35 @@ const {
   cardAsText,
   getCardValue,
   keyToFields,
+  uniqueDescription,
+  formatSearchURI,
 } = require('./parsers');
-const { name } = require('./requests');
+const { name, allPrints } = require('./requests');
 const Discord = require('discord.js');
 
 const startTimer = () => new Date().getTime();
 
 const endTimer = (start) =>
   parseFloat(((new Date().getTime() - start) / 1000) % 60);
+
+const fetchUnique = (scryData) => {
+  return new Promise((res, rej) => {
+    try {
+      allPrints(scryData.name).then((resp) => {
+        const { data: uniqeList } = resp.data;
+        const relevantParts = uniqeList.map((card) => ({
+          setName: card.set_name,
+          setCode: card.set.toUpperCase(),
+          number: card.collector_number,
+          url: card.scryfall_uri,
+        }));
+        res({ ...scryData, uniquePrints: relevantParts });
+      });
+    } catch (error) {
+      rej(error);
+    }
+  });
+};
 
 function startFetch(msg) {
   return new Promise((res, rej) => {
@@ -28,11 +49,17 @@ function fetchAllCards(cardList) {
     return new Promise((res, rej) => {
       const start = startTimer();
       try {
+        console.log(cardObj);
         name({ fuzzy: cardObj.name, set: cardObj.set })
           .then((resp) => {
             const seconds = endTimer(start);
-            res({ ...resp.data, modes: cardObj.modes, timer: seconds });
+            return fetchUnique({
+              ...resp.data,
+              modes: cardObj.modes,
+              timer: seconds,
+            });
           })
+          .then((resp) => res(resp))
           .catch((err) => {
             if (err.response) {
               res(err.response.data);
@@ -55,10 +82,15 @@ function constructEmbeds(cardDataList) {
         const imageUris = getCardValue('image_uris', scryResp);
         const smallImage = { url: imageUris.small };
         const largeImage = { url: imageUris.border_crop };
-        const isMultiFaced = 'card_faces' in scryResp;
         if (scryResp.modes.length === 0) {
           scryResp.modes = ['image'];
         }
+
+        const errorEmbed = (description) => ({
+          color: '#C31F1F',
+          title: 'Mode Error',
+          description: `Mode "${mode}" does not exist. Please refer to my help dialog for a list of modes that I can do.`,
+        });
 
         const embedDefaults = (card) => ({
           color: 0x1b6f9,
@@ -96,16 +128,27 @@ function constructEmbeds(cardDataList) {
           description: getCardValue('flavor_text', card),
         });
 
+        const uniqueEmbed = (card) => ({
+          ...embedDefaults(card),
+          url: formatSearchURI(card.prints_search_uri),
+          thumbnail: smallImage,
+          description: uniqueDescription(card),
+        });
+
         const modeMap = {
           image: imageEmbed,
           oracle: oracleEmbed,
           price: priceEmbed,
           legal: legalEmbed,
           flavor: flavorEmbed,
+          unique: uniqueEmbed,
         };
 
         return scryResp.modes.map((mode) => {
           const embedStyle = modeMap[mode];
+          if (embedStyle === undefined) {
+            return new Discord.MessageEmbed(errorEmbed(mode));
+          }
           return new Discord.MessageEmbed(embedStyle(scryResp));
         });
       });

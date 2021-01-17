@@ -1,3 +1,5 @@
+const url = require('url');
+
 const getCardDeclarations = (string) =>
   string.match(/(\[\[[\w\s\'\.\,|/:🎲-]+\]\])+/g);
 
@@ -7,6 +9,8 @@ const sanitize = (string) => {
 };
 
 const getCardValue = (valueName, cardObj, i = 0) => {
+  if (valueName === 'legalities') return cardObj[valueName];
+  if (valueName === 'prices') return cardObj[valueName];
   if ('card_faces' in cardObj) return cardObj.card_faces[i][valueName];
   return cardObj[valueName];
 };
@@ -100,17 +104,32 @@ const keyToFields = (name, cardObj) => {
   return removeEmptyFields;
 };
 
+const uniqueDescription = (cardObj) => {
+  const { uniquePrints } = cardObj;
+  return uniquePrints
+    .map((print) => {
+      const { setName, setCode, number, url } = print;
+      return `[${setName}: ${setCode} (${number})](${url})`;
+    })
+    .join('\n');
+};
+
+const formatSearchURI = (uriLink) => {
+  const URL = url.parse(uriLink);
+  const { search } = URL;
+  return `https://scryfall.com/search${search}`;
+};
+
 function getCardsFromMessage(messageString) {
   const cardDeclarations = getCardDeclarations(messageString);
 
   const functionModes = [
+    'image',
     'oracle',
     'price',
     'legal',
-    'rules',
     'flavor',
     'unique',
-    'frames',
   ];
 
   return cardDeclarations
@@ -127,4 +146,6 @@ module.exports = {
   cardAsText,
   keyToFields,
   getCardValue,
+  uniqueDescription,
+  formatSearchURI,
 };

@@ -48,6 +48,19 @@ const allSets = () => {
   });
 };
 
+const allPrints = (name) => {
+  const params = {
+    q: `!"${name}"`,
+    unique: 'prints',
+  };
+  return axios
+    .get(`${baseURL}/cards/search`, { params: params })
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+};
+
 module.exports = {
   name,
   rulings,
@@ -55,4 +68,5 @@ module.exports = {
   random,
   codeAndNumber,
   allSets,
+  allPrints,
 };
