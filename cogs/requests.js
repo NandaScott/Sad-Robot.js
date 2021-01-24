@@ -2,9 +2,14 @@ const axios = require('axios');
 
 const baseURL = 'https://api.scryfall.com';
 
-const name = (params) => {
+const name = (name, set) => {
   return axios
-    .get(`${baseURL}/cards/named`, { params: params })
+    .get(`${baseURL}/cards/named`, {
+      params: {
+        fuzzy: name,
+        set: set,
+      },
+    })
     .catch((err) => {
       console.log(err);
       throw err;

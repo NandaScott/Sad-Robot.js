@@ -132,13 +132,31 @@ function getCardsFromMessage(messageString) {
     'unique',
   ];
 
+  const isMode = (val) => functionModes.includes(val);
+
+  const isNum = (val) => isNaN(parseInt(val));
+
+  const findColletorNum = (parsedList) =>
+    parsedList.filter((val) => !isNum(val))[0];
+
+  const findSet = (parsedList) => {
+    const [found] = parsedList.filter((val) => {
+      if (!isNum(val)) return false;
+      if (!isMode(val)) return val;
+    });
+    return found;
+  };
+
   return cardDeclarations
     .map((val) => sanitize(val))
-    .map((list) => ({
-      name: list.shift(),
-      modes: list.filter((mode) => functionModes.includes(mode)),
-      set: list.filter((mode) => !functionModes.includes(mode))[0],
-    }));
+    .map((list) => {
+      return {
+        name: list.shift(),
+        modes: list.filter((mode) => isMode(mode)),
+        set: findSet(list),
+        num: findColletorNum(list),
+      };
+    });
 }
 
 module.exports = {

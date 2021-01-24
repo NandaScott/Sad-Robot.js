@@ -6,7 +6,7 @@ const {
   uniqueDescription,
   formatSearchURI,
 } = require('./parsers');
-const { name, allPrints, autocomplete } = require('./requests');
+const { name, allPrints, autocomplete, codeAndNumber } = require('./requests');
 const Discord = require('discord.js');
 
 const startTimer = () => new Date().getTime();
@@ -49,7 +49,14 @@ function fetchAllCards(cardList) {
     return new Promise((res, rej) => {
       const start = startTimer();
       try {
-        name({ fuzzy: cardObj.name, set: cardObj.set })
+        const { name: cardName, set, num } = cardObj;
+        let promise;
+        if (num) {
+          promise = codeAndNumber(set, num);
+        } else {
+          promise = name(cardName, set);
+        }
+        promise
           .then((resp) => {
             const seconds = endTimer(start);
             return fetchUnique({

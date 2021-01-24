@@ -1,27 +1,19 @@
 const helpText = (prefix) => `
 \`\`\`
 
-[[cardname]]
-    Fetch a card. Defaults to the image.
-[[cardname | oracle]]
-    Fetch a card's oracle text.
-[[cardname | price]]
-    Fetch a card's price.
-[[cardname | legal]]
-    Fetch a card's legality.
-[[cardname | rules]]
-    Fetch a card's rulings.
-[[cardname | flavor]]
-    Fetch a card's flavor text.
-[[cardname | unique]]
-    Fetch a linked list of all printings for a card.
-[[🎲]]
-    Fetches a random card.
+[[cardname]]................Fetch a card. Defaults to the image.
+[[cardname | image ]].......Fetched the image(s) of the card.
+[[cardname | oracle]].......Fetch a card's oracle text.
+[[cardname | price]]........Fetch a card's price.
+[[cardname | legal]]........Fetch a card's legality.
+[[cardname | flavor]].......Fetch a card's flavor text.
+[[cardname | unique]].......Fetch a linked list of all printings for a card.
+[[ cardname | set | num ]]..Fetch a card by its collector number and set code.
 
-You may fetch a specific set of a card with the following pattern.
-You may use any other mode with this.
-[[cardname | set:KTK]]
-[[cardname | set:KTK | oracle]]
+You can fetch a specific set of a card.
+You may use any other mode with this, and can add additional modes.
+[[cardname | ktk]]
+[[cardname | ktk | oracle | rules]]
 
 Other commands:
 ${prefix}help

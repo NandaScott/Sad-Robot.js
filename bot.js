@@ -63,10 +63,10 @@ client.on('message', async (msg) => {
   switch (command) {
     case 'feedback':
       adminUtils.getFeedback(msg, args);
-      break;
+      return;
     case 'help':
       msg.author.send(helpText.helpText(serverPrefix));
-      break;
+      return;
     case 'ping':
       const m = await msg.channel.send('Ping?');
       m.edit(
@@ -74,10 +74,10 @@ client.on('message', async (msg) => {
           m.createdTimestamp - msg.createdTimestamp
         }ms. API Latency is ${Math.round(client.ping)}ms`
       );
-      break;
+      return;
     case 'prefix':
       prefix.main(cache, msg, args);
-      break;
+      return;
   }
 
   switch (msg.content.toLowerCase()) {
