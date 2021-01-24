@@ -6,7 +6,7 @@ const {
   uniqueDescription,
   formatSearchURI,
 } = require('./parsers');
-const { name, allPrints } = require('./requests');
+const { name, allPrints, autocomplete } = require('./requests');
 const Discord = require('discord.js');
 
 const startTimer = () => new Date().getTime();
@@ -49,7 +49,6 @@ function fetchAllCards(cardList) {
     return new Promise((res, rej) => {
       const start = startTimer();
       try {
-        console.log(cardObj);
         name({ fuzzy: cardObj.name, set: cardObj.set })
           .then((resp) => {
             const seconds = endTimer(start);
@@ -62,7 +61,27 @@ function fetchAllCards(cardList) {
           .then((resp) => res(resp))
           .catch((err) => {
             if (err.response) {
-              res(err.response.data);
+              autocomplete({ q: cardObj.name, include_extras: true })
+                .then((resp) => {
+                  const { data: suggestions } = resp.data;
+                  const { details } = err.response.data;
+                  if (suggestions.length > 0) {
+                    res({
+                      object: 'error',
+                      details: details,
+                      sugg: `You may have meant one of the following:\n${suggestions.join(
+                        '\n'
+                      )}`,
+                    });
+                  } else {
+                    res({
+                      object: 'error',
+                      details: details,
+                      sugg: 'No suggestions found.',
+                    });
+                  }
+                })
+                .catch((err) => rej(err));
             } else {
               throw err;
             }
@@ -80,13 +99,13 @@ function constructEmbeds(cardDataList) {
       const messageList = cardDataList.map((scryResp) => {
         const name = getCardValue('name', scryResp);
         const imageUris = getCardValue('image_uris', scryResp);
-        const smallImage = { url: imageUris.small };
-        const largeImage = { url: imageUris.border_crop };
-        if (scryResp.modes.length === 0) {
+        const smallImage = { url: imageUris?.small };
+        const largeImage = { url: imageUris?.border_crop };
+        if (scryResp.modes?.length === 0) {
           scryResp.modes = ['image'];
         }
 
-        const errorEmbed = (description) => ({
+        const errorEmbed = () => ({
           color: '#C31F1F',
           title: 'Mode Error',
           description: `Mode "${mode}" does not exist. Please refer to my help dialog for a list of modes that I can do.`,
@@ -144,6 +163,15 @@ function constructEmbeds(cardDataList) {
           unique: uniqueEmbed,
         };
 
+        if (scryResp.object === 'error') {
+          return [
+            new Discord.MessageEmbed({
+              color: '#C31F1F',
+              title: scryResp.details,
+              description: scryResp.sugg,
+            }),
+          ];
+        }
         return scryResp.modes.map((mode) => {
           const embedStyle = modeMap[mode];
           if (embedStyle === undefined) {
