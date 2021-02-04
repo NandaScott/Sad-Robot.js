@@ -6,7 +6,7 @@
   "dependencies": {
     "async-redis": "^1.1.4",
     "axios": "^0.21.1",
-    "discord.js": "^11.3.2",
+    "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "redis": "^2.8.0"
   },
@@ -14,7 +14,7 @@
     "nodemon": "^1.18.3"
   },
   "scripts": {
-    "start": "nodemon bot.js"
+    "start": "nodemon --trace-warnings bot.js"
   },
   "repository": {
     "type": "git",

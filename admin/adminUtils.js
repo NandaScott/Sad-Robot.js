@@ -1,8 +1,6 @@
-const Discord = require('discord.js');
 const util = require('util');
 const redis = require('redis');
 const cache = redis.createClient(6379, '127.0.0.1');
-
 const asyncGet = util.promisify(cache.get).bind(cache);
 
 /*
@@ -18,23 +16,27 @@ The bot will then remove the reaction, to prevent accidental bannings.
 function getFeedback(msg, args) {
   let guild = msg.channel.type === 'dm' ? 'DM' : msg.guild.name;
 
-  let embed = new Discord.RichEmbed()
-    .setTitle('New feedback message')
-    .setColor(0xff1c1c).setDescription(`
-        Username: ${msg.author.username}
-        ID: ${msg.author.id}
-        Timestamp: ${msg.createdAt}
-        Guild name: ${guild}
+  let embed = {
+    embed: {
+      title: 'New feedback message',
+      color: 0xff1c1c,
+      description: `
+  Username: ${msg.author.username}
+  ID: ${msg.author.id}
+  Timestamp: ${msg.createdAt}
+  Guild name: ${guild}
 
-        ${args.join(' ')}`);
+  ${args.join(' ')}`,
+    },
+  };
   let client = msg.channel.client;
 
-  client
-    .fetchUser(process.env.MASTER_ID)
+  client.users
+    .fetch(process.env.MASTER_ID)
     .then((user) => {
       msg.channel.send('Feedback sent.');
 
-      return user.send({ embed });
+      return user.send(embed);
     })
     .then((message) => {
       return message.react('🚷');
@@ -60,8 +62,8 @@ function banUser(msg, redis_client) {
     let client = msg.channel.client;
 
     if (err) {
-      client
-        .fetchUser(process.env.MASTER_ID)
+      client.users
+        .fetch(process.env.MASTER_ID)
         .then((user) => {
           user.send(`Failed to ban user ${msg.author.username}\n${err}`);
         })
@@ -82,8 +84,8 @@ function banUser(msg, redis_client) {
 
     cache.set('bannedUsers', newUsers, (err, reply) => {
       if (err) {
-        client
-          .fetchUser(process.env.MASTER_ID)
+        client.users
+          .fetch(process.env.MASTER_ID)
           .then((user) => {
             user.send(`Failed to write user to file\n${err}`);
           })
@@ -92,8 +94,8 @@ function banUser(msg, redis_client) {
           });
       }
 
-      client
-        .fetchUser(process.env.MASTER_ID)
+      client.users
+        .fetch(process.env.MASTER_ID)
         .then((user) => {
           user.send(`Successfully banned user ${msg.author.username}`);
         })

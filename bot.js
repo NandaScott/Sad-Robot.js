@@ -2,17 +2,32 @@ const Discord = require('discord.js');
 const redis = require('redis');
 const cache = redis.createClient(6379, '127.0.0.1');
 
-const handleCardFetch = require('./mtg/handleCardFetch');
 const helpText = require('./extra_utils/helpText');
 const adminUtils = require('./admin/adminUtils');
 const prefix = require('./extra_utils/handlePrefixes');
+const {
+  startFetch,
+  fetchAllCards,
+  constructEmbeds,
+  sendAllEmbeds,
+  findTimerReaction,
+  removeTimerReaction,
+} = require('./cogs/promiseCard');
 
 const client = new Discord.Client();
 
 require('dotenv').config();
 
+function errorDM(err) {
+  client.users
+    .fetch(process.env.MASTER_ID)
+    .then((user) => user.createDM())
+    .then((dm) => dm.send('Error happened! ```' + err.stack + '```'))
+    .catch(console.error);
+}
+
 client.on('ready', () => {
-  console.log('Logged in!');
+  console.log('Logged in!', new Date().toISOString());
   prefix.setDefaultPrefix(cache);
 
   cache.get('bannedUsers', (err, reply) => {
@@ -46,10 +61,10 @@ client.on('message', async (msg) => {
   switch (command) {
     case 'feedback':
       adminUtils.getFeedback(msg, args);
-      break;
+      return;
     case 'help':
       msg.author.send(helpText.helpText(serverPrefix));
-      break;
+      return;
     case 'ping':
       const m = await msg.channel.send('Ping?');
       m.edit(
@@ -57,15 +72,24 @@ client.on('message', async (msg) => {
           m.createdTimestamp - msg.createdTimestamp
         }ms. API Latency is ${Math.round(client.ping)}ms`
       );
-      break;
+      return;
     case 'prefix':
       prefix.main(cache, msg, args);
-      break;
+      return;
   }
 
   switch (msg.content.toLowerCase()) {
     default:
-      handleCardFetch.handleCardFetch(msg);
+      msg
+        .react('⏱️')
+        .then((msgReaction) => startFetch(msgReaction.message))
+        .then((requestedCards) => fetchAllCards(requestedCards))
+        .then((promises) => Promise.all(promises))
+        .then((resps) => constructEmbeds(resps))
+        .then((embeds) => sendAllEmbeds(embeds, msg))
+        .then(() => findTimerReaction(msg))
+        .then((react) => removeTimerReaction(react))
+        .catch(errorDM);
       break;
     case 'good bot':
       msg.reply('Thank you!');
@@ -76,13 +100,15 @@ client.on('message', async (msg) => {
   }
 });
 
-client.on('guildMemberAdd', (member) => {
+client.on('guildMemberAdd', async (member) => {
   const memberId = member.id;
+  let serverPrefix = await prefix.checkPrefix(msg);
+  const selfName = process.env.BOT_NAME;
 
-  client
-    .fetchUser(memberId)
+  client.users
+    .fetch(memberId)
     .then((user) => {
-      user.send(helpText.greeting(member.guild.name));
+      user.send(helpText.greeting(member.guild.name, serverPrefix, selfName));
     })
     .catch((err) => {
       console.error(err);
@@ -90,11 +116,11 @@ client.on('guildMemberAdd', (member) => {
 });
 
 client.on('guildCreate', (guild) => {
-  guild.members.forEach((member) => {
-    if (member.hasPermission('ADMINISTRATOR') && member.id != client.user.id) {
-      member.send(helpText.onJoin(guild.name));
-    }
-  });
+  const membersWithHighestRole = guild.roles.highest.members;
+
+  membersWithHighestRole.forEach((member) =>
+    member.send(helpText.onJoin(guild.name, process.env.BOT_NAME))
+  );
 });
 
 client.on('guildDelete', (guild) => {
@@ -106,3 +132,7 @@ client.on('guildDelete', (guild) => {
 });
 
 client.login(process.env.TOKEN);
+
+module.exports = {
+  errorDM,
+};
