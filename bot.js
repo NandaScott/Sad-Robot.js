@@ -10,8 +10,6 @@ const {
   fetchAllCards,
   constructEmbeds,
   sendAllEmbeds,
-  reactToAllEmbeds,
-  onReactEmbed,
   findTimerReaction,
   removeTimerReaction,
 } = require('./cogs/promiseCard');

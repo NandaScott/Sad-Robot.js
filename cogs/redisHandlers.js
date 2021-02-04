@@ -1,26 +1,31 @@
 const redis = require('redis');
-const { errorDM } = require('../bot');
+const client = redis.createClient(6379, '127.0.0.1');
+const { promisify } = require('util');
+const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.setex).bind(client);
+const delAsync = promisify(client.del).bind(client);
 
-const cache = redis.createClient(6379, '127.0.0.1');
+const forOneHour = 1000 * 60 * 60;
 
-cache.on('ready', () => {
+const cache = {
+  get: getAsync,
+  set: setAsync,
+  del: delAsync,
+};
+
+client.on('ready', () => {
   console.log('Connected to redis.');
 });
 
-cache.on('error', (err) => {
+client.on('error', (err) => {
   console.error(err);
 });
 
-const checkCache = (msg, paramsObject, embedType) => {
-  const key = `${paramsObject.card} ${embedType}${paramsObject.setCode}`;
+const getCard = (key) => cache.get(key);
 
-  cache.get(key, (err, reply) => {
-    if (err) {
-      errorDM(err);
-    } else if (reply === null) {
-      // make API call
-    } else {
-      // send Discord message
-    }
-  });
-};
+const setCard = (key, value) =>
+  cache.set(key, forOneHour, JSON.stringify(value));
+
+const delCard = (key) => cache.del(key);
+
+module.exports = { getCard, setCard, delCard };
