@@ -160,6 +160,7 @@ function getCardsFromMessage(messageString) {
 }
 
 module.exports = {
+  getCardDeclarations,
   getCardsFromMessage,
   cardAsText,
   keyToFields,

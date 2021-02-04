@@ -13,6 +13,7 @@ const {
   findTimerReaction,
   removeTimerReaction,
 } = require('./cogs/promiseCard');
+const { getCardDeclarations } = require('./cogs/parsers');
 
 const client = new Discord.Client();
 
@@ -80,6 +81,7 @@ client.on('message', async (msg) => {
 
   switch (msg.content.toLowerCase()) {
     default:
+      if (!getCardDeclarations(msg.content.toLowerCase())) return;
       msg
         .react('⏱️')
         .then((msgReaction) => startFetch(msgReaction.message))
