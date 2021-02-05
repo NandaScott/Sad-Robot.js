@@ -103,90 +103,108 @@ function fetchAllCards(cardList) {
 function constructEmbeds(cardDataList) {
   return new Promise((res, rej) => {
     try {
-      const messageList = cardDataList.map((scryResp) => {
-        const name = getCardValue('name', scryResp);
-        const imageUris = getCardValue('image_uris', scryResp);
-        const smallImage = { url: imageUris?.small };
-        const largeImage = { url: imageUris?.border_crop };
-        if (scryResp.modes?.length === 0) {
-          scryResp.modes = ['image'];
-        }
-
-        const errorEmbed = () => ({
-          color: '#C31F1F',
-          title: 'Mode Error',
-          description: `Mode "${mode}" does not exist. Please refer to my help dialog for a list of modes that I can do.`,
-        });
-
-        const embedDefaults = (card) => ({
-          color: 0x1b6f9,
-          url: card.scryfall_uri,
-          title: `**${name}**`,
-          footer: { text: `Fetch took: ${card.timer} seconds.` },
-        });
-
-        const imageEmbed = (card) => ({
-          ...embedDefaults(card),
-          image: largeImage,
-        });
-
-        const oracleEmbed = (card) => ({
-          ...embedDefaults(card),
-          thumbnail: smallImage,
-          description: cardAsText(card),
-        });
-
-        const priceEmbed = (card) => ({
-          ...embedDefaults(card),
-          fields: keyToFields('prices', card),
-          thumbnail: smallImage,
-        });
-
-        const legalEmbed = (card) => ({
-          ...embedDefaults(card),
-          fields: keyToFields('legalities', card),
-          thumbnail: smallImage,
-        });
-
-        const flavorEmbed = (card) => ({
-          ...embedDefaults(card),
-          thumbnail: smallImage,
-          description: getCardValue('flavor_text', card),
-        });
-
-        const uniqueEmbed = (card) => ({
-          ...embedDefaults(card),
-          url: formatSearchURI(card.prints_search_uri),
-          thumbnail: smallImage,
-          description: uniqueDescription(card),
-        });
-
-        const modeMap = {
-          image: imageEmbed,
-          oracle: oracleEmbed,
-          price: priceEmbed,
-          legal: legalEmbed,
-          flavor: flavorEmbed,
-          unique: uniqueEmbed,
-        };
-
-        if (scryResp.object === 'error') {
-          return [
-            new Discord.MessageEmbed({
-              color: '#C31F1F',
-              title: scryResp.details,
-              description: scryResp.sugg,
-            }),
-          ];
-        }
-        return scryResp.modes.map((mode) => {
-          const embedStyle = modeMap[mode];
-          if (embedStyle === undefined) {
-            return new Discord.MessageEmbed(errorEmbed(mode));
+      const messageList = cardDataList
+        .map((scryResp) => {
+          const name = getCardValue('name', scryResp);
+          const imageUris = getCardValue('image_uris', scryResp);
+          const smallImage = { url: imageUris?.small };
+          if (scryResp.modes?.length === 0) {
+            scryResp.modes = ['image'];
           }
-          return new Discord.MessageEmbed(embedStyle(scryResp));
-        });
-      });
+
+          const errorEmbed = () => ({
+            color: '#C31F1F',
+            title: 'Mode Error',
+            description: `Mode "${mode}" does not exist. Please refer to my help dialog for a list of modes that I can do.`,
+          });
+
+          const embedDefaults = (card) => ({
+            color: 0x1b6f9,
+            url: card.scryfall_uri,
+            title: `**${name}**`,
+            footer: { text: `Fetch took: ${card.timer} seconds.` },
+          });
+
+          const imageEmbed = (card, i = 0) => ({
+            ...embedDefaults(card),
+            image: { url: imageUris?.border_crop },
+          });
+
+          const oracleEmbed = (card) => ({
+            ...embedDefaults(card),
+            thumbnail: smallImage,
+            description: cardAsText(card),
+          });
+
+          const priceEmbed = (card) => ({
+            ...embedDefaults(card),
+            fields: keyToFields('prices', card),
+            thumbnail: smallImage,
+          });
+
+          const legalEmbed = (card) => ({
+            ...embedDefaults(card),
+            fields: keyToFields('legalities', card),
+            thumbnail: smallImage,
+          });
+
+          const flavorEmbed = (card) => ({
+            ...embedDefaults(card),
+            thumbnail: smallImage,
+            description: getCardValue('flavor_text', card),
+          });
+
+          const uniqueEmbed = (card) => ({
+            ...embedDefaults(card),
+            url: formatSearchURI(card.prints_search_uri),
+            thumbnail: smallImage,
+            description: uniqueDescription(card),
+          });
+
+          const modeMap = {
+            image: imageEmbed,
+            oracle: oracleEmbed,
+            price: priceEmbed,
+            legal: legalEmbed,
+            flavor: flavorEmbed,
+            unique: uniqueEmbed,
+          };
+
+          if (scryResp.object === 'error') {
+            return [
+              new Discord.MessageEmbed({
+                color: '#C31F1F',
+                title: scryResp.details,
+                description: scryResp.sugg,
+              }),
+            ];
+          }
+          return scryResp.modes.map((mode) => {
+            const embedStyle = modeMap[mode];
+            if (embedStyle === undefined) {
+              return new Discord.MessageEmbed(errorEmbed(mode));
+            }
+            if ('card_faces' in scryResp && mode === 'image') {
+              return [
+                new Discord.MessageEmbed({
+                  ...embedDefaults(scryResp),
+                  image: {
+                    url: getCardValue('image_uris', scryResp, 0)?.border_crop,
+                  },
+                }),
+                new Discord.MessageEmbed({
+                  ...embedDefaults(scryResp),
+                  image: {
+                    url: getCardValue('image_uris', scryResp, 1)?.border_crop,
+                  },
+                }),
+              ];
+            }
+
+            return new Discord.MessageEmbed(embedStyle(scryResp));
+          });
+        })
+        .reduce((acc, curr) => acc.concat(curr), []); // Make sure the array is flattened.
       res(messageList);
     } catch (error) {
       rej(error);
@@ -198,7 +216,11 @@ function sendAllEmbeds(embedList, message) {
   return new Promise((res, rej) => {
     try {
       const allMessages = embedList.map((embeds) => {
-        embeds.forEach((embed) => message.channel.send(embed));
+        if (Array.isArray(embeds)) {
+          embeds.forEach((embed) => message.channel.send(embed));
+        } else {
+          message.channel.send(embeds);
+        }
       });
       res(allMessages);
     } catch (error) {
