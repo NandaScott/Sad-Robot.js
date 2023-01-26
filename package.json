@@ -14,7 +14,8 @@
     "nodemon": "^1.18.3"
   },
   "scripts": {
-    "start": "nodemon --trace-warnings bot.js"
+    "start": "node bot.js",
+    "dev": "nodemon --trace-warnings bot.js"
   },
   "repository": {
     "type": "git",
